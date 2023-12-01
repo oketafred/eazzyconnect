@@ -1,6 +1,11 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SmsBundleController;
+use App\Http\Controllers\SmsController;
+use App\Http\Controllers\SmsReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,9 +31,29 @@ Route::get('/', function () {
 //    ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
+    Route::get('/groups', [GroupController::class, 'index'])
+        ->name('groups.index');
+    Route::get('/groups/create', [GroupController::class, 'create'])
+        ->name('groups.create');
+    Route::post('/groups', [GroupController::class, 'store'])
+        ->name('groups.store');
+    Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])
+        ->name('groups.edit');
+    Route::put('/groups/{group}', [GroupController::class, 'update'])
+        ->name('groups.update');
+
+    Route::get('sms_bundle', [SmsBundleController::class, 'index'])
+        ->name('sms-bundle.index');
+
+    Route::get('sms/create', [SmsController::class, 'create'])
+        ->name('sms.create');
+
+    Route::get('sms_report', [SmsReportController::class, 'index'])
+        ->name('sms-report.index');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])
