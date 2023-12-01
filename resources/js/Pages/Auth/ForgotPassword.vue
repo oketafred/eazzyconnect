@@ -36,7 +36,7 @@ const submit = () => {
           <Link
             :href="route('login')"
             class="font-semibold text-indigo-600 hover:text-indigo-500">
-            Sign in here
+            Login here
           </Link>
         </p>
       </div>
