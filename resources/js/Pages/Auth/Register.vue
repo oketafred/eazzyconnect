@@ -34,7 +34,7 @@ const submit = () => {
                 <p class="mt-2 text-sm leading-6 text-gray-500">
                     Already have an account?
                     {{ ' ' }}
-                    <Link :href="route('login')" class="font-semibold text-indigo-600 hover:text-indigo-500">Sign in here</Link>
+                    <Link :href="route('login')" class="font-semibold text-indigo-600 hover:text-indigo-500">Login here</Link>
                 </p>
             </div>
 
