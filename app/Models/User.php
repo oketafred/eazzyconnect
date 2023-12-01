@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -42,4 +43,38 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class);
+    }
+
+    public function sms_bundle(): HasMany
+    {
+        return $this->hasMany(SmsBundle::class);
+    }
+
+    public function smses(): HasMany
+    {
+        return $this->hasMany(Sms::class);
+    }
+
+    public function smsCredit()
+    {
+        return $this->sms_bundle()->sum('number_of_sms');
+    }
+
+    public function successfulSmsCount(): int
+    {
+        return $this->smses()
+            ->where('status', 'Success')
+            ->count();
+    }
+
+    public function failedSmsCount(): int
+    {
+        return $this->smses()
+            ->where('status', 'Failed')
+            ->count();
+    }
 }

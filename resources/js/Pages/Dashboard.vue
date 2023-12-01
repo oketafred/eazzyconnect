@@ -1,7 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { ref } from 'vue'
+
+const props = defineProps({
+    successfulSmsCount: { type: Number, required: true },
+    failedSmsCount: { type: Number, required: true },
+    smsCredit: { type: Number, required: true },
+    groupCount: { type: Number, required: true }
+})
 
 const smses = ref([
   {
@@ -69,7 +76,7 @@ const smses = ref([
                       class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                       <div class="flex-1 truncate px-4 py-2 text-lg">
                         <a href="#" class="font-medium text-gray-900 hover:text-gray-600">Total Groups</a>
-                        <p class="text-gray-500">2</p>
+                        <p class="text-gray-500">{{ groupCount }}</p>
                       </div>
                     </div>
                   </li>
@@ -88,7 +95,7 @@ const smses = ref([
                       class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                       <div class="flex-1 truncate px-4 py-2 text-lg">
                         <a href="#" class="font-medium text-gray-900 hover:text-gray-600">Delivered SMS</a>
-                        <p class="text-gray-500">1,998</p>
+                        <p class="text-gray-500">{{ successfulSmsCount }}</p>
                       </div>
                     </div>
                   </li>
@@ -108,7 +115,7 @@ const smses = ref([
                       class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                       <div class="flex-1 truncate px-4 py-2 text-lg">
                         <a href="#" class="font-medium text-gray-900 hover:text-gray-600">Failed SMS</a>
-                        <p class="text-gray-500">2</p>
+                        <p class="text-gray-500">{{ failedSmsCount }}</p>
                       </div>
                     </div>
                   </li>
@@ -128,7 +135,7 @@ const smses = ref([
                       class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                       <div class="flex-1 truncate px-4 py-2 text-lg">
                         <a href="#" class="font-medium text-gray-900 hover:text-gray-600">SMS Bundle</a>
-                        <p class="text-gray-500">6,000</p>
+                        <p class="text-gray-500">{{ smsCredit }}</p>
                       </div>
                     </div>
                   </li>
@@ -148,10 +155,10 @@ const smses = ref([
                   </div>
                   <div>
                     <div class="inline-flex gap-x-2">
-                      <a class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none "
-                         href="#">
+                      <Link class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none "
+                         :href="route('sms-report.index')">
                         View all
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
