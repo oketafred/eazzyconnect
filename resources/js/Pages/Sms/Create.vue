@@ -1,18 +1,30 @@
 <script setup>
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { computed, ref, watch } from 'vue'
 
 defineProps({
     errors: Object
-})
+});
 
 const form =  useForm({
-    title: '',
-    description: '',
-})
+    phone_number: '',
+    message: '',
+});
+
+const characterCount = ref(0);
+const maxNumberOfCharactersPerSms = 160;
+
+watch(() => form.message, (newValue, oldValue) => {
+    characterCount.value = newValue.length;
+});
+
+const numberOfSms = computed(() => {
+   return Math.ceil(characterCount.value / maxNumberOfCharactersPerSms);
+});
 
 let submit = () => {
-    form.post(route('groups.store'));
+    form.post(route('sms.store'));
 }
 </script>
 
@@ -36,39 +48,42 @@ let submit = () => {
                             Phone Number(s)
                         </label>
                         <input class="border border-gray-400 p-2 w-full"
-                               v-model="form.title"
-                               type="text"
-                               name="title"
-                               id="title"
+                               v-model="form.phone_number"
+                               type="tel"
+                               name="phone_number"
+                               id="phone_number"
                                required
                         >
-                        <div v-if="form.errors.title" class="text-red-400 text-xs">
-                            {{ form.errors.title }}
+                        <div v-if="form.errors.phone_number" class="text-red-400 text-xs">
+                            {{ form.errors.phone_number }}
                         </div>
                     </div>
 
                     <div class="mb-6">
                         <label
                             for="email"
-                            class="block mb-2 uppercase font-bold text-xs text-gray-700">
-                            Message Body
+                            class="block mb-2 font-bold text-xs text-gray-700">
+                            <span class="uppercase">Message Body</span> <span>({{ characterCount }} Characters)</span>
                         </label>
                         <textarea class="border border-gray-400 p-2 w-full"
-                               v-model="form.description"
-                               type="text"
-                               name="description"
-                               id="description"
+                               v-model="form.message"
+                               name="message"
+                               id="message"
+                               rows="10"
                                required
                         ></textarea>
-                        <div v-if="form.errors.description" class="text-red-400 text-xs">
-                            {{ form.errors.description }}
+                        <template v-if="characterCount > maxNumberOfCharactersPerSms">
+                            <p class="text-xs text-red-700">You have typed {{ characterCount }} characters which is equivalent to {{ numberOfSms }} SMS(es) </p>
+                        </template>
+                        <div v-if="form.errors.message" class="text-red-400 text-xs">
+                            {{ form.errors.message }}
                         </div>
                     </div>
 
                     <div class="mb-6">
                         <button
                             type="submit"
-                            :disabled="true ?? form.processing"
+                            :disabled="form.processing"
                             class="bg-blue-400 text-white rounded py-2 px-4 hover:bg-blue-500"
                         >
                             Send Now

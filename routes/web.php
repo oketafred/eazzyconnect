@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProfileController;
@@ -42,14 +43,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('groups.store');
     Route::get('/groups/{group}/edit', [GroupController::class, 'edit'])
         ->name('groups.edit');
+    Route::get('/groups/{group}/show', [GroupController::class, 'show'])
+        ->name('groups.show');
     Route::put('/groups/{group}', [GroupController::class, 'update'])
         ->name('groups.update');
+
+    Route::post('/contact/{group}', [ContactController::class, 'store'])
+        ->name('contact.store');
 
     Route::get('sms_bundle', [SmsBundleController::class, 'index'])
         ->name('sms-bundle.index');
 
     Route::get('sms/create', [SmsController::class, 'create'])
         ->name('sms.create');
+    Route::post('/sms', [SmsController::class, 'store'])
+        ->name('sms.store');
 
     Route::get('sms_report', [SmsReportController::class, 'index'])
         ->name('sms-report.index');

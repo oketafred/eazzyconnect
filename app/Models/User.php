@@ -74,7 +74,7 @@ class User extends Authenticatable
     public function failedSmsCount(): int
     {
         return $this->smses()
-            ->where('status', 'Failed')
+            ->where('status', '!=', 'Success')
             ->count();
     }
 }

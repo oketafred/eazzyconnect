@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Sms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
@@ -18,6 +19,7 @@ class DashboardController extends Controller
             'failedSmsCount' => Number::format(Auth::user()?->failedSmsCount()),
             'groupCount' => Number::format(Group::query()->count()),
             'smsCredit' => Number::format(Auth::user()?->smsCredit()),
+            'smses' => Sms::query()->latest()->take(5)->get()
         ]);
     }
 }

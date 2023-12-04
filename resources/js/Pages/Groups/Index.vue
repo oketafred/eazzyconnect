@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
     groups: {
-        type: Array,
+        type: Object,
         required: true
     }
 });
@@ -63,7 +63,7 @@ defineProps({
                                     </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                    <tr v-for="group in groups" :key="group.id">
+                                    <tr v-for="group in groups.data" :key="group.id">
                                         <td class="py-5 pl-4 pr-3 text-sm sm:pl-0">
                                             <span>{{ new Date(group.created_at).toUTCString() }}</span>
                                         </td>
@@ -78,7 +78,10 @@ defineProps({
                                           </span>
                                         </td>
                                         <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-center text-sm font-medium sm:pr-0">
-                                            <Link :href="`/groups/${group.id}/edit`" class="text-indigo-600 hover:text-indigo-900">
+                                            <Link :href="`/groups/${group.id}/show`" class="bg-white border border-indigo-600 text-indigo-600 py-2 px-4 rounded hover:bg-indigo-600 hover:text-white">
+                                                Add Contacts
+                                            </Link>
+                                            <Link :href="`/groups/${group.id}/edit`" class=" ml-5 bg-white border border-green-600 text-green-600 py-2 px-4 rounded hover:bg-green-600 hover:text-white">
                                                 Edit
                                             </Link>
                                         </td>
@@ -86,6 +89,21 @@ defineProps({
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Pagination-->
+                <div>
+                    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
+                        <div>
+                            <Link
+                                preserve-scroll
+                                v-for="link in groups.links"
+                                :href="link.url ?? ''"
+                                v-html="link.label"
+                                :class="link.active ? 'relative z-10 inline-flex items-center bg-blue-500 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500': 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
+                            />
                         </div>
                     </div>
                 </div>
