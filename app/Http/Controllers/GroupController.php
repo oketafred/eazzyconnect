@@ -13,7 +13,10 @@ class GroupController extends Controller
     public function index(): Response
     {
         return Inertia::render('Groups/Index', [
-            'groups' => Group::all()
+            'groups' => Group::query()
+                ->orderByDesc('id')
+                ->paginate(10)
+                ->withQueryString(),
         ]);
     }
 
@@ -32,6 +35,22 @@ class GroupController extends Controller
         $request->user()->groups()->create($validated);
 
         return redirect('/groups');
+    }
+
+    public function show(Group $group)
+    {
+        return inertia('Groups/Show', [
+            'group' => $group,
+            'contacts' => $group->contacts()
+                ->paginate(20)
+                ->withQueryString()
+                ->through(fn($contact) => [
+                    'id' => $contact->id,
+                    'createdAt' => $contact->created_at,
+                    'phoneNumber' => $contact->phone_number,
+                ]),
+            'contactCount' => $group->contacts()->count()
+        ]);
     }
 
     /**

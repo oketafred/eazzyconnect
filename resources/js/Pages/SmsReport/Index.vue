@@ -1,49 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue'
+import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
-    group_count: Number
-})
-
-const smses = ref([
-    {
-        id: 1,
-        date: 'December 1, 2023 12:06 AM',
-        text: 'Dear ANNET, Your Personal Use loan is in arrears by UGX 1,000. Please clear it to qualify for a higher amount next time. Kina-Kwekulakulanya Sacco',
-        from: '+256751591628',
-        status: 'Success'
-    },
-    {
-        id: 2,
-        date: 'December 1, 2023 12:06 AM',
-        text: 'Dear Acio, Your Education loan payment of UGX 1 has been received. Thank you. Eugene Farmers Sacco\n',
-        from: '+256775197747',
-        status: 'Success'
-    },
-    {
-        id: 3,
-        date: 'December 1, 2023 12:06 AM',
-        text: 'Dear ANNET, Your Personal Use loan is in arrears by UGX 1,000. Please clear it to qualify for a higher amount next time. Kina-Kwekulakulanya Sacco',
-        from: '+256751591628',
-        status: 'Success'
-    },
-    {
-        id: 4,
-        date: 'December 1, 2023 12:06 AM',
-        text: 'Dear NAMBI, A deposit of UGX 2,000 to account KBT Gold Account was successful. KBT MICROFINANCE( SACCO)',
-        from: '+256751591628',
-        status: 'Success'
-    },
-    {
-        id: 5,
-        date: 'December 1, 2023 12:06 AM',
-        text: 'Dear NABISAYI, A deposit of UGX 4,000 to account KBT Gold Account was successful. KBT MICROFINANCE( SACCO)',
-        from: '+256709741885',
-        status: 'Success'
-    }
-]);
+    smses: { type: Object, required: true },
+});
 
 </script>
 
@@ -84,26 +45,45 @@ const smses = ref([
                                     </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                    <tr v-for="sms in smses" :key="sms.id">
+                                    <tr v-for="sms in smses.data" :key="sms.id">
                                         <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                            <span>December 1, 2023 12:06 AM</span>
+                                            <span>{{ sms.createdAt }}</span>
                                         </td>
                                         <td class="px-3 py-5 text-sm text-gray-500">
-                              <span class="flex-wrap">
-                                Dear ANNET, Your Personal Use loan is in arrears by UGX 1,000. Please clear it to qualify for a higher amount next time. Kina-Kwekulakulanya Sacco
-                              </span>
+                                          <span class="flex-wrap">
+                                            {{ sms.message }}
+                                          </span>
                                         </td>
-                                        <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">+256751591628</td>
+                                        <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
+                                            {{ sms.phoneNumber }}
+                                        </td>
                                         <td class="whitespace-nowrap px-3 py-5 text-gray-500">
-                              <span
-                                  class="inline-flex items-center rounded-md bg-green-500 px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20">
-                                Success
-                              </span>
+                                          <span
+                                              class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
+                                              :class="{ 'bg-green-500': sms.status === 'Success', 'bg-red-500': sms.status !== 'Success' }"
+                                          >
+                                            {{ sms.status }}
+                                          </span>
                                         </td>
                                     </tr>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--Pagination-->
+                <div>
+                    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
+                        <div>
+                            <Link
+                                preserve-scroll
+                                v-for="link in smses.links"
+                                :href="link.url ?? ''"
+                                v-html="link.label"
+                                :class="link.active ? 'relative z-10 inline-flex items-center bg-blue-500 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500': 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
+                            />
                         </div>
                     </div>
                 </div>

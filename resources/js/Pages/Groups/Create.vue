@@ -3,13 +3,14 @@ import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 
 defineProps({
+    isOpen: Boolean,
     errors: Object
 })
 
 const form =  useForm({
     title: '',
     description: '',
-})
+});
 
 let submit = () => {
     form.post(route('groups.store'));
