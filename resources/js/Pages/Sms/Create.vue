@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { computed, ref, watch } from 'vue'
+import { toast } from 'vue3-toastify'
 
 defineProps({
     errors: Object
@@ -24,7 +25,11 @@ const numberOfSms = computed(() => {
 });
 
 let submit = () => {
-    form.post(route('sms.store'));
+    form.post(route('sms.store'), {
+        onSuccess() {
+            toast.success('Your SMS is queued for sending.')
+        }
+    });
 }
 </script>
 
