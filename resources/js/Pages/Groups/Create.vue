@@ -1,6 +1,7 @@
 <script setup>
-import { Head, Link, useForm } from '@inertiajs/vue3'
+import { Head, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { toast } from 'vue3-toastify';
 
 defineProps({
     isOpen: Boolean,
@@ -13,7 +14,11 @@ const form =  useForm({
 });
 
 let submit = () => {
-    form.post(route('groups.store'));
+    form.post(route('groups.store'), {
+        onSuccess() {
+            toast.success('A new group added successfully')
+        }
+    });
 }
 </script>
 

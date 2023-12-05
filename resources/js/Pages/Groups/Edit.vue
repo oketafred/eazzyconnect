@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { onMounted } from 'vue'
+import { toast } from 'vue3-toastify'
 
 const { group, errors } = defineProps({
     group: {
@@ -25,7 +26,11 @@ onMounted(() => {
 })
 
 let submit = () => {
-    form.put(route('groups.update', group.id));
+    form.put(route('groups.update', group.id), {
+        onSuccess() {
+            toast.success('Group updated successfully.')
+        }
+    });
 }
 </script>
 

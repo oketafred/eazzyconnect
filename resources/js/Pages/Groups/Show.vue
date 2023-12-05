@@ -2,6 +2,7 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue'
+import { toast } from 'vue3-toastify'
 
 const { group } = defineProps({
     contacts: Array,
@@ -17,9 +18,12 @@ const isOpen = ref(false);
 
 let submit = () => {
     form.post(route('contact.store', group.id), {
-        onSuccess: () => form.reset('phone_number'),
+        onSuccess() {
+            toast.success(`Phone Number ${form.phone_number} added successfully.`)
+            form.reset('phone_number');
+        },
         onFinish() {
-            isOpen.value = false
+            isOpen.value = false;
         }
     });
 }
