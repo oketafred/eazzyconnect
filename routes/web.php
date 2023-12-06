@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ContactImportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\ProfileController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\SmsController;
 use App\Http\Controllers\SmsReportController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 /*
@@ -47,6 +49,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('groups.show');
     Route::put('/groups/{group}', [GroupController::class, 'update'])
         ->name('groups.update');
+
+    Route::get('/groups/{group}/contacts/import', [ContactImportController::class, 'index'])
+        ->name('contact-import.index');
+    Route::post('/groups/{group}/contacts/import', [ContactImportController::class, 'store'])
+        ->name('contact-import.store');
+
+    Route::get('contact/download-template', function () {
+        $path = public_path('Contact Import Template.csv');
+        return response()->download($path);
+    })->name('contact.import');
 
     Route::post('/contact/{group}', [ContactController::class, 'store'])
         ->name('contact.store');

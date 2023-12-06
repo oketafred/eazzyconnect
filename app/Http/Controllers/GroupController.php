@@ -34,7 +34,8 @@ class GroupController extends Controller
 
         $request->user()->groups()->create($validated);
 
-        return redirect('/groups');
+        return redirect('/groups')
+            ->with('success', 'Group created successfully');
     }
 
     public function show(Group $group)
@@ -72,6 +73,7 @@ class GroupController extends Controller
 
         $group->update($validated);
 
-        return redirect('/groups');
+        return redirect('/groups')
+            ->with('success', 'Group updated successfully');
     }
 }
