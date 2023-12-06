@@ -52,8 +52,7 @@ let submit = () => {
                                 @click="isOpen = true"
                                 type="button"
                                 class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Add Single Contact</button>
-                            <button type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Download Template</button>
-                            <button type="button" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Upload CSV</button>
+                            <Link :href="route('contact-import.index', group.id)" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Import Bulk Contacts</Link>
                         </div>
                     </div>
                 </div>
@@ -83,9 +82,6 @@ let submit = () => {
                                                        id="phone_number"
                                                        required
                                                 >
-                                                <div v-if="form.errors.phone_number" class="text-red-400 text-xs">
-                                                    {{ form.errors.phone_number }}
-                                                </div>
                                             </div>
                                         </div>
                                     </div>

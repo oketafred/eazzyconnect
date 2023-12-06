@@ -35,6 +35,6 @@ class SmsController extends Controller
             SendBulkSmsJob::dispatch($phone_number, $message, $user);
         }
 
-        return redirect()->back()->with('SMS is being sent now');
+        return redirect()->back()->with('success', 'SMS sending is in process');
     }
 }
