@@ -4,6 +4,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ContactImportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SmsBundleController;
 use App\Http\Controllers\SmsController;
@@ -55,7 +56,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/groups/{group}/contacts/import', [ContactImportController::class, 'store'])
         ->name('contact-import.store');
 
-    Route::get('contact/download-template', function () {
+    Route::get('/contact/download-template', function () {
         $path = public_path('Contact Import Template.csv');
         return response()->download($path);
     })->name('contact.import');
@@ -63,10 +64,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/contact/{group}', [ContactController::class, 'store'])
         ->name('contact.store');
 
-    Route::get('sms_bundle', [SmsBundleController::class, 'index'])
+    Route::get('/sms_bundle', [SmsBundleController::class, 'index'])
         ->name('sms-bundle.index');
 
-    Route::get('sms/create', [SmsController::class, 'create'])
+    Route::post('/sms_bundle/payment', [SmsBundleController::class, 'store'])
+        ->name('sms-bundle.payment');
+
+    Route::get('/verify-transaction/{transaction_id}', [SmsBundleController::class, 'verifyTransaction'])
+        ->name('sms-bundle.payment.verify');
+
+
+    Route::get('/sms/create', [SmsController::class, 'create'])
         ->name('sms.create');
     Route::post('/sms', [SmsController::class, 'store'])
         ->name('sms.store');

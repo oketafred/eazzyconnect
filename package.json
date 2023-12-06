@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "libphonenumber-js": "^1.10.51",
-        "maz-ui": "^3.29.9"
+        "maz-ui": "^3.29.9",
+        "sweetalert2": "^11.10.1"
     }
 }
