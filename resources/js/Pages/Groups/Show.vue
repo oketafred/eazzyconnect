@@ -2,10 +2,11 @@
 import { Head, Link, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { ref } from 'vue'
-import { toast } from 'vue3-toastify'
+import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
+import InputError from '@/Components/InputError.vue'
 
 const { group } = defineProps({
-    contacts: Array,
+    contacts: Object,
     contactCount: Number,
     group: Object
 });
@@ -15,11 +16,11 @@ const form =  useForm({
 });
 
 const isOpen = ref(false);
+const results = ref();
 
 let submit = () => {
     form.post(route('contact.store', group.id), {
         onSuccess() {
-            toast.success(`Phone Number ${form.phone_number} added successfully.`)
             form.reset('phone_number');
         },
         onFinish() {
@@ -75,13 +76,23 @@ let submit = () => {
                                                     class="block mb-2 uppercase font-bold text-xs text-gray-700">
                                                     Phone Number
                                                 </label>
-                                                <input class="border border-gray-400 p-2 w-full"
-                                                       v-model="form.phone_number"
-                                                       type="text"
-                                                       name="phone_number"
-                                                       id="phone_number"
-                                                       required
-                                                >
+                                                <MazPhoneNumberInput
+                                                    required
+                                                    auto-focus
+                                                    no-radius
+                                                    size="sm"
+                                                    v-model="form.phone_number"
+                                                    show-code-on-list
+                                                    no-search
+                                                    no-country-selector
+                                                    placeholder="0787584128"
+                                                    default-country-code="UG"
+                                                    @update="results = $event"
+                                                    :success="results?.isValid"
+                                                    :only-countries="['UG']"
+                                                    autocomplete="off"
+                                                />
+                                                <InputError class="mt-2" :message="form.errors.phone_number" />
                                             </div>
                                         </div>
                                     </div>

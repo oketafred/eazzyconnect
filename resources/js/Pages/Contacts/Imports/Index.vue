@@ -1,7 +1,6 @@
 <script setup>
 import { Head, useForm } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { toast } from 'vue3-toastify'
 
 const { group } = defineProps({
     contactCount: Number,
@@ -14,11 +13,7 @@ const form =  useForm({
 });
 
 let submit = () => {
-    form.post(route('contact-import.store', group.id), {
-        onSuccess() {
-            toast.success('Contacts imported successfully');
-        }
-    });
+    form.post(route('contact-import.store', group.id));
 }
 </script>
 
