@@ -59,9 +59,20 @@ class User extends Authenticatable
         return $this->hasMany(Sms::class);
     }
 
+    public function numberOfSentSms(): int
+    {
+        return $this->smses()->count();
+    }
+
+    public function numberOfPurchasedSms()
+    {
+        return $this->sms_bundle()->where('status', SmsBundle::STATUS_SUCCESSFUL)
+            ->sum('number_of_sms');
+    }
+
     public function smsCredit()
     {
-        return $this->sms_bundle()->sum('number_of_sms');
+        return $this->numberOfPurchasedSms() - $this->numberOfSentSms();
     }
 
     public function successfulSmsCount(): int
