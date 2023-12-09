@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\SmsBundle;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Services\FlutterwaveService;
@@ -23,21 +24,33 @@ class PaymentWebhookApiController extends Controller
         Log::info(json_encode($request));
 
         // if it is a charge event, verify and confirm it is a successful transaction
-        if ($verified && $request->event === 'charge.completed' && $request->data['status'] === 'successful') {
+        if ($verified && $request->event === 'charge.completed') {
             $verificationData = $this->flutterwaveService->verifyTransaction($request->data['id']);
-            if ($verificationData['status'] === 'success') {
-                // TODO: Update the transaction here
-
+            if ($verificationData['status'] === SmsBundle::STATUS_PENDING) {
                 return response()->json([
-                    'message' => 'Transaction successful'
-                ], Response::HTTP_OK);
+                    'message' => 'Transaction is still pending'
+                ], Response::HTTP_BAD_REQUEST);
             }
-            // TODO: Update the transaction here
+
+            $payload = $verificationData['data'];
+
+            SmsBundle::query()
+                ->where('transaction_reference', $payload['tx_ref'])
+                ->where('amount', $payload['amount'])
+                ->update([
+                    'status' => $payload['status'],
+                    'external_id' => $payload['id'],
+                    'payment_type' => $payload['payment_type']
+                ]);
 
             return response()->json([
-                'message' => 'Transaction failed'
+                'message' => 'Transaction successful'
             ], Response::HTTP_OK);
         }
+
+        return response()->json([
+            'message' => 'Transaction event is not charge.completed'
+        ], Response::HTTP_BAD_REQUEST);
     }
 
     public function verifyWebhook(): bool

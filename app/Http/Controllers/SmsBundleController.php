@@ -3,17 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\SmsBundle;
+use App\Rules\Phone;
+use App\Services\FlutterwaveService;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
-use Inertia\Response;
 
 class SmsBundleController extends Controller
 {
-    public function index(): Response
+    public function __construct(public FlutterwaveService $flutterwaveService)
+    {
+    }
+
+    public function index()
     {
         return Inertia::render('SmsBundle/Index', [
             'smsBundles' => SmsBundle::query()
@@ -22,7 +27,7 @@ class SmsBundleController extends Controller
                 ->withQueryString()
                 ->through(fn($sms_bundle) => [
                     'id' => $sms_bundle->id,
-                    'createdAt' => $sms_bundle->created_at,
+                    'createdAt' => $sms_bundle->created_at->diffForHumans(),
                     'amount' => Number::format($sms_bundle->amount),
                     'numberOfSms' => number_format(floor($sms_bundle->number_of_sms)),
                     'paymentType' => $sms_bundle->payment_type,
@@ -36,6 +41,7 @@ class SmsBundleController extends Controller
     {
         $validated = $this->validate($request, [
             'amount' => 'required',
+            'phone_number' => ['required', new Phone()]
         ]);
 
         $user = Auth::user();
@@ -44,6 +50,7 @@ class SmsBundleController extends Controller
             'amount' =>  $validated['amount'],
             'customer_name' =>  $user?->name,
             'customer_email' =>  $user?->email,
+            'phone_number' =>  $validated['phone_number'],
             'transaction_reference' =>  Str::uuid(),
             'sms_unit_price' => SmsBundle::SMS_UNIT_PRICE,
             'number_of_sms' => floor($validated['amount'] / SmsBundle::SMS_UNIT_PRICE),
@@ -54,12 +61,26 @@ class SmsBundleController extends Controller
 
     public function verifyTransaction(Request $request, $transaction_id)
     {
-        $r= Http::acceptJson()
-            ->withToken("FLWPUBK_TEST-3ff5792905cbfdca6a7016d089688a29-X")
-            ->get("https://api.flutterwave.com/v3/transactions/$transaction_id/verify")
-            ->throw()
-            ->json();
+        $verificationData = $this->flutterwaveService->verifyTransaction($transaction_id);
+        if ($verificationData['status'] === SmsBundle::STATUS_PENDING) {
+            return response()->json([
+                'message' => 'Transaction is still pending'
+            ], Response::HTTP_BAD_REQUEST);
+        }
 
-        dd($r);
+        $payload = $verificationData['data'];
+
+        SmsBundle::query()
+            ->where('transaction_reference', $payload['tx_ref'])
+            ->where('amount', $payload['amount'])
+            ->update([
+                'status' => $payload['status'],
+                'external_id' => $payload['id'],
+                'payment_type' => $payload['payment_type']
+            ]);
+
+        return response()->json([
+            'message' => 'Transaction successful'
+        ], Response::HTTP_OK);
     }
 }

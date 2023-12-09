@@ -85,7 +85,7 @@ let submit = () => {
                                                     show-code-on-list
                                                     no-search
                                                     no-country-selector
-                                                    placeholder="0787584128"
+                                                    placeholder="+256787584128"
                                                     default-country-code="UG"
                                                     @update="results = $event"
                                                     :success="results?.isValid"
