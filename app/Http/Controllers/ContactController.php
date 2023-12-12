@@ -17,7 +17,11 @@ class ContactController extends Controller
                 'required',
                 new Phone(),
                 'unique:contacts,phone_number,NULL,id,group_id,' . $group->id,
-            ]
+            ],
+        ], [
+            'phone_number.required' => 'The phone number is required.',
+            'phone_number.phone' => 'is not a valid ugandan phone number',
+            'phone_number.unique' => 'The phone number has already been taken in this group.',
         ]);
 
         if ($validator->fails()) {

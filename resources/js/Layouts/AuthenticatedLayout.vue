@@ -29,7 +29,7 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
                                             Groups
                                         </NavLink>
                                         <NavLink :href="route('sms-bundle.index')" class="rounded-md px-3 py-2 text-sm font-medium" :active="route().current('sms-bundle.index')">
-                                            SMS Bundle
+                                            Balance
                                         </NavLink>
                                         <NavLink :href="route('sms.create')" class="rounded-md px-3 py-2 text-sm font-medium" :active="route().current('sms.create')">
                                             Send SMS
@@ -103,7 +103,7 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
                                 :class="[route().current('sms-bundle.index') ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white', 'block rounded-md px-3 py-2 text-base font-medium']"
                                 :active="route().current('sms-bundle.index')"
                             >
-                                SMS Bundle
+                                Balance
                             </NavLink>
                             <NavLink
                                 :href="route('sms.create')"
