@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Models\Group;
 use Inertia\Response;
@@ -24,6 +25,10 @@ class ContactImportController extends Controller
 
     public function store(Group $group, Request $request)
     {
+        $this->validate($request, [
+            'file' => 'required|extensions:csv',
+        ]);
+
         try {
             $file = $request->file('file');
             $filename = mt_rand() . $file->getClientOriginalName();
@@ -38,9 +43,11 @@ class ContactImportController extends Controller
 
             Storage::disk('local')->delete($filepath);
         } catch (ValidationException $exception) {
-            return redirect()->back()->with('error', json_encode($exception->failures()));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', $e->getMessage());
+            return redirect()->back()->with('import_error', json_encode($exception->failures()));
+        } catch (\Exception $exception) {
+            Log::critical($exception);
+            return redirect()->back()
+                ->with('error', 'Something when wrong. Please try again later.');
         }
 
         return redirect()->route('groups.show', $group->id)

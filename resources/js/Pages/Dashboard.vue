@@ -3,10 +3,10 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 const props = defineProps({
-    successfulSmsCount: { type: Number, required: true },
-    failedSmsCount: { type: Number, required: true },
-    smsCredit: { type: Number, required: true },
-    groupCount: { type: Number, required: true },
+    successfulSmsCount: { type: String, required: true },
+    failedSmsCount: { type: String, required: true },
+    accountBalance: { type: String, required: true },
+    groupCount: { type: String, required: true },
     smses: { type: Array, required: true }
 });
 
@@ -17,7 +17,7 @@ const props = defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">Dashboard</h2>
         </template>
 
         <div class="py-12">
@@ -96,8 +96,8 @@ const props = defineProps({
                     <div
                       class="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
                       <div class="flex-1 truncate px-4 py-2 text-lg">
-                        <Link :href="route('sms-bundle.index')" class="font-medium text-gray-900 hover:text-gray-600">SMS Bundle</Link>
-                        <p class="text-gray-500">{{ smsCredit }}</p>
+                        <Link :href="route('sms-bundle.index')" class="font-medium text-gray-900 hover:text-gray-600">Account Balance</Link>
+                        <p class="text-gray-500">{{ accountBalance }}</p>
                       </div>
                     </div>
                   </li>
@@ -140,7 +140,7 @@ const props = defineProps({
                           </th>
                           <th scope="col"
                               class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                            From
+                            Receiver
                           </th>
                           <th scope="col"
                               class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">

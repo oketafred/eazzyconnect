@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,6 +16,7 @@ return new class extends Migration
         Schema::create('sms', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Group::class)->nullable()->constrained();
             $table->longText('message');
             $table->text('phone_number');
             $table->text('status');

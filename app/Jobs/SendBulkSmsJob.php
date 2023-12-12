@@ -25,7 +25,8 @@ class SendBulkSmsJob implements ShouldQueue
     public function __construct(
         public string $phone_number,
         public string $message,
-        public User $user
+        public User $user,
+        public $group_id,
     )
     {
     }
@@ -36,15 +37,19 @@ class SendBulkSmsJob implements ShouldQueue
     public function handle(AfricasTalkingService $africasTalkingService): void
     {
         try {
-            $response = $africasTalkingService->sendSms($this->phone_number, $this->message);
+            $response = $africasTalkingService->sendSms(
+                $this->phone_number,
+                $this->message
+            );
 
-//            dd($response['SMSMessageData']['Recipients'][0]);
+            $payload = $response['SMSMessageData']['Recipients'][0];
 
             $this->user->smses()->create([
-                'cost' => $response['SMSMessageData']['Recipients'][0]['cost'],
-                'phone_number' => $response['SMSMessageData']['Recipients'][0]['number'],
-                'status' => $response['SMSMessageData']['Recipients'][0]['status'],
-                'messageId' => $response['SMSMessageData']['Recipients'][0]['messageId'],
+                'group_id' => $this->group_id,
+                'cost' => $this->calculateSmsCost(),
+                'phone_number' => $payload['number'],
+                'status' => $payload['status'],
+                'messageId' => $payload['messageId'],
                 'message' => $this->message
             ]);
 
@@ -52,5 +57,11 @@ class SendBulkSmsJob implements ShouldQueue
         } catch (Throwable $throwable) {
             Log::error($throwable);
         }
+    }
+
+    private function calculateSmsCost(): int
+    {
+        $numberOfSms = ceil(strlen($this->message) / Sms::MAX_NUMBER_OF_CHARACTERS_IN_AN_SMS);
+        return $numberOfSms * Sms::COST_PER_SMS;
     }
 }

@@ -8,6 +8,7 @@ use App\Services\FlutterwaveService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -21,6 +22,8 @@ class SmsBundleController extends Controller
     public function index()
     {
         return Inertia::render('SmsBundle/Index', [
+            'accountBalance' => Number::currency(Auth::user()?->accountBalance(), 'UGX'),
+            'flwPublicKey' => config('flutterwave.public_key'),
             'smsBundles' => SmsBundle::query()
                 ->orderByDesc('id')
                 ->paginate(20)
@@ -29,7 +32,6 @@ class SmsBundleController extends Controller
                     'id' => $sms_bundle->id,
                     'createdAt' => $sms_bundle->created_at->diffForHumans(),
                     'amount' => Number::format($sms_bundle->amount),
-                    'numberOfSms' => number_format(floor($sms_bundle->number_of_sms)),
                     'paymentType' => $sms_bundle->payment_type,
                     'status' => ucfirst($sms_bundle->status),
                     'transactionReference' => $sms_bundle->transaction_reference,
@@ -52,8 +54,6 @@ class SmsBundleController extends Controller
             'customer_email' =>  $user?->email,
             'phone_number' =>  $validated['phone_number'],
             'transaction_reference' =>  Str::uuid(),
-            'sms_unit_price' => SmsBundle::SMS_UNIT_PRICE,
-            'number_of_sms' => floor($validated['amount'] / SmsBundle::SMS_UNIT_PRICE),
         ]);
 
         return response()->json($sms_bundle);
@@ -61,26 +61,54 @@ class SmsBundleController extends Controller
 
     public function verifyTransaction(Request $request, $transaction_id)
     {
-        $verificationData = $this->flutterwaveService->verifyTransaction($transaction_id);
-        if ($verificationData['status'] === SmsBundle::STATUS_PENDING) {
+        try {
+            $verificationData = $this->flutterwaveService->verifyTransaction($transaction_id);
+            if ($verificationData['status'] === SmsBundle::STATUS_PENDING) {
+                return response()->json([
+                    'message' => 'Transaction is still pending'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            $payload = $verificationData['data'];
+
+            SmsBundle::query()
+                ->where('transaction_reference', $payload['tx_ref'])
+                ->where('amount', $payload['amount'])
+                ->update([
+                    'status' => $payload['status'],
+                    'external_id' => $payload['id'],
+                    'payment_type' => $payload['payment_type']
+                ]);
+
             return response()->json([
-                'message' => 'Transaction is still pending'
-            ], Response::HTTP_BAD_REQUEST);
+                'message' => 'Transaction successful'
+            ], Response::HTTP_OK);
+        } catch (\Exception $exception) {
+            Log::error($exception);
+            return response()->json([
+                'message' => 'Something went wrong. Please try again later.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
 
-        $payload = $verificationData['data'];
+    public function cancelTransaction(Request $request, $transaction_reference)
+    {
+        Log::info($transaction_reference);
+        try {
+            SmsBundle::query()
+                ->where('transaction_reference', $transaction_reference)
+                ->update([
+                    'status' => SmsBundle::STATUS_CANCELLED,
+                ]);
+            return response()->json([
+                'message' => 'Transaction was cancelled!'
+            ], Response::HTTP_OK);
 
-        SmsBundle::query()
-            ->where('transaction_reference', $payload['tx_ref'])
-            ->where('amount', $payload['amount'])
-            ->update([
-                'status' => $payload['status'],
-                'external_id' => $payload['id'],
-                'payment_type' => $payload['payment_type']
-            ]);
-
-        return response()->json([
-            'message' => 'Transaction successful'
-        ], Response::HTTP_OK);
+        } catch (\Exception $exception) {
+            Log::error($exception);
+            return response()->json([
+                'message' => 'Something went wrong. Please try again later.'
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

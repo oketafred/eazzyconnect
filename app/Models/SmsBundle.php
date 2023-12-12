@@ -22,8 +22,6 @@ class SmsBundle extends Model
         'user_id',
         'currency_code',
         'amount',
-        'number_of_sms',
-        'sms_unit_price',
         'transaction_reference',
         'external_id',
         'customer_name',

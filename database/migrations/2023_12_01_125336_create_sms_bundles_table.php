@@ -18,8 +18,6 @@ return new class extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->string('currency_code')->default('UGX');
             $table->decimal('amount', 19, 4);
-            $table->string('number_of_sms');
-            $table->string('sms_unit_price');
             $table->string('transaction_reference');
             $table->string('external_id')->nullable();
             $table->string('customer_name');

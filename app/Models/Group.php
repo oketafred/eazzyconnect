@@ -33,4 +33,9 @@ class Group extends Model
     {
         return $this->hasMany(Contact::class);
     }
+
+    public function smses(): HasMany
+    {
+        return $this->hasMany(Sms::class);
+    }
 }
