@@ -57,8 +57,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('contact-import.store');
 
     Route::get('/contact/download-template', function () {
-        $path = public_path('Contact Import Template.csv');
-        return response()->download($path);
+        $path = public_path('ContactsTemplate.csv');
+
+        return response()->download($path, 'ContactsTemplate', [
+            'Content-Type' => 'text/csv',
+        ]);
     })->name('contact.import');
 
     Route::post('/contact/{group}', [ContactController::class, 'store'])
@@ -70,8 +73,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sms_bundle/payment', [SmsBundleController::class, 'store'])
         ->name('sms-bundle.payment');
 
-    Route::get('/verify-transaction/{transaction_id}', [SmsBundleController::class, 'verifyTransaction'])
+    Route::post('/verify-transaction/{transaction_id}', [SmsBundleController::class, 'verifyTransaction'])
         ->name('sms-bundle.payment.verify');
+
+    Route::post('cancel-transaction/{transaction_reference}', [SmsBundleController::class, 'cancelTransaction'])
+        ->name('bundle-sms.cancel-transaction');
 
 
     Route::get('/sms/create', [SmsController::class, 'create'])

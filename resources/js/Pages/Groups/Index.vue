@@ -1,6 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { PencilSquareIcon, PencilIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
 
 defineProps({
     groups: {
@@ -15,7 +16,7 @@ defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Groups</h2>
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">Groups</h2>
         </template>
 
         <div class="py-12">
@@ -65,24 +66,30 @@ defineProps({
                                     <tbody class="divide-y divide-gray-200 bg-white">
                                     <tr v-for="group in groups.data" :key="group.id">
                                         <td class="py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                            <span>{{ new Date(group.created_at).toUTCString() }}</span>
+                                            <span>{{ group.createdAt }}</span>
                                         </td>
                                         <td class="px-3 py-5 text-sm text-gray-500">
-                                          <span class="flex-wrap">
+                                          <span class="flex-wrap truncate">
                                             {{ group.title}}
                                           </span>
                                         </td>
                                         <td class="px-3 py-5 text-sm text-gray-500">
-                                          <span class="flex-wrap">
+                                          <span class="flex-wrap truncate">
                                             {{ group.description}}
                                           </span>
                                         </td>
-                                        <td class="relative whitespace-nowrap py-5 pl-3 pr-4 text-center text-sm font-medium sm:pr-0">
-                                            <Link :href="`/groups/${group.id}/show`" class="bg-white border border-indigo-600 text-indigo-600 py-2 px-4 rounded hover:bg-indigo-600 hover:text-white">
-                                                Add Contacts
+                                        <td class="flex justify-end gap-3.5 relative whitespace-nowrap py-5 text-right text-sm font-medium sm:pr-0">
+                                            <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
+                                                <span>View Contacts</span>
+                                                <ClipboardDocumentListIcon class="h-4 w-4" aria-hidden="true" />
                                             </Link>
-                                            <Link :href="`/groups/${group.id}/edit`" class=" ml-5 bg-white border border-green-600 text-green-600 py-2 px-4 rounded hover:bg-green-600 hover:text-white">
-                                                Edit
+                                            <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
+                                                <span>Add Contacts</span>
+                                                <PencilSquareIcon class="h-4 w-4" aria-hidden="true" />
+                                            </Link>
+                                            <Link :href="`/groups/${group.id}/edit`" class="flex items-center gap-x-2.5 bg-white border border-green-600 text-xs text-green-600 py-2.5 px-4 rounded hover:bg-green-600 hover:text-white">
+                                                <span>Edit</span>
+                                                <PencilIcon class="h-4 w-4" aria-hidden="true" />
                                             </Link>
                                         </td>
                                     </tr>
@@ -94,7 +101,7 @@ defineProps({
                 </div>
 
                 <!--Pagination-->
-                <div>
+                <div v-if="groups.last_page > 1">
                     <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
                         <div>
                             <Link

@@ -43,7 +43,7 @@ const submit = () => {
         <div class="mx-auto w-full max-w-sm lg:w-96">
             <div>
                 <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
-                <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">Login into your account</h2>
+                <h2 class="text-2xl font-bold leading-9 tracking-tight text-gray-900">Login into your account</h2>
                 <p class="mt-2 text-sm leading-6 text-gray-500">
                     Don't have an account yet?
                     {{ ' ' }}

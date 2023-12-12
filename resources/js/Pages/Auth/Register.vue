@@ -28,17 +28,17 @@ const submit = () => {
         <div class="mx-auto w-full max-w-sm lg:w-96">
             <div>
                 <ApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
-                <h2 class="mt-8 text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                <h2 class="text-2xl font-bold leading-9 tracking-tight text-gray-900">
                     Register for an account
                 </h2>
-                <p class="mt-2 text-sm leading-6 text-gray-500">
+                <p class="text-sm leading-6 text-gray-500">
                     Already have an account?
                     {{ ' ' }}
                     <Link :href="route('login')" class="font-semibold text-indigo-600 hover:text-indigo-500">Login here</Link>
                 </p>
             </div>
 
-            <div class="mt-10">
+            <div>
                 <div>
                     <form @submit.prevent="submit">
                         <div class="mt-4">

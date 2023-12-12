@@ -22,13 +22,13 @@ let submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">
                 Create Group
             </h2>
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-2xl py-6 rounded-lg shadow bg-white mx-auto sm:px-6 lg:px-8">
                 <form class="max-w-md mx-auto mt-8" @submit.prevent="submit">
                     <div class="mb-6">
                         <label
@@ -57,6 +57,7 @@ let submit = () => {
                         <textarea class="border border-gray-400 p-2 w-full"
                                v-model="form.description"
                                type="text"
+                               rows="5"
                                name="description"
                                id="description"
                                required

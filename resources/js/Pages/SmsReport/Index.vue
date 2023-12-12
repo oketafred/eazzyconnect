@@ -13,7 +13,7 @@ const props = defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">SMS Consumption Report</h2>
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">SMS Consumption Report</h2>
         </template>
 
         <div class="py-12">
@@ -36,7 +36,15 @@ const props = defineProps({
                                         </th>
                                         <th scope="col"
                                             class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                            From
+                                            Receiver
+                                        </th>
+                                        <th scope="col"
+                                            class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                            Group
+                                        </th>
+                                        <th scope="col"
+                                            class="whitespace-nowrap px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
+                                            Cost (UGX)
                                         </th>
                                         <th scope="col"
                                             class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
@@ -57,6 +65,12 @@ const props = defineProps({
                                         <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
                                             {{ sms.phoneNumber }}
                                         </td>
+                                        <td class="whitespace-nowrap font-bold px-3 py-5 text-gray-500 text-sm">
+                                            {{ sms.groupTitle }}
+                                        </td>
+                                        <td class="whitespace-nowrap text-center px-3 py-5 text-gray-500 text-sm">
+                                            {{ sms.cost }}
+                                        </td>
                                         <td class="whitespace-nowrap px-3 py-5 text-gray-500">
                                           <span
                                               class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
@@ -74,7 +88,7 @@ const props = defineProps({
                 </div>
 
                 <!--Pagination-->
-                <div>
+                <div v-if="smses.last_page > 1">
                     <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
                         <div>
                             <Link

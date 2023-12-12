@@ -34,7 +34,7 @@ let submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">
                 Edit Group
             </h2>
         </template>

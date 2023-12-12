@@ -16,7 +16,13 @@ class GroupController extends Controller
             'groups' => Group::query()
                 ->orderByDesc('id')
                 ->paginate(10)
-                ->withQueryString(),
+                ->withQueryString()
+                ->through(fn($contact) => [
+                    'id' => $contact->id,
+                    'createdAt' => $contact->created_at->diffForHumans(),
+                    'title' => $contact->title,
+                    'description' => $contact->description,
+                ]),
         ]);
     }
 
@@ -47,7 +53,7 @@ class GroupController extends Controller
                 ->withQueryString()
                 ->through(fn($contact) => [
                     'id' => $contact->id,
-                    'createdAt' => $contact->created_at,
+                    'createdAt' => $contact->created_at->diffForHumans(),
                     'phoneNumber' => $contact->phone_number,
                 ]),
             'contactCount' => $group->contacts()->count()

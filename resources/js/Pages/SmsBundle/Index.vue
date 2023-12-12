@@ -1,19 +1,23 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3'
-import { onMounted, ref } from 'vue'
-import Swal from 'sweetalert2'
-import axios from 'axios'
-import InputError from '@/Components/InputError.vue'
-import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput'
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { onMounted, ref } from 'vue';
+import Swal from 'sweetalert2';
+import axios from 'axios';
+import InputError from '@/Components/InputError.vue';
+import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput';
+import { BanknotesIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
+    accountBalance: String,
+    flwPublicKey: String,
     smsBundles: Object
 });
 
 const isOpen = ref(false);
 const isLoading = ref(false);
 const results = ref();
+const transactionInProgress = ref(null);
 
 const form = useForm({
     amount: null,
@@ -38,6 +42,7 @@ const handleSubmit = async () => {
             phone_number: form.phone_number
         });
         const payment = await response.data;
+        transactionInProgress.value = payment;
 
         isLoading.value = false;
         isOpen.value = false;
@@ -50,7 +55,25 @@ const handleSubmit = async () => {
 const verifyTransactionOnBackend = async (transactionId) => {
     try {
         const response = await axios
-            .get(`/verify-transaction/${transactionId}`);
+            .post(`/verify-transaction/${transactionId}`);
+        const payment = await response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const cancelTransactionOnBackend = async (payment) => {
+    console.log('transactionInProgress.value', transactionInProgress.value);
+
+    const { transaction_reference } = transactionInProgress.value;
+
+    if (!transaction_reference) {
+        return;
+    }
+
+    try {
+        const response = await axios
+            .post(`/cancel-transaction/${transaction_reference}`);
         const payment = await response.data;
     } catch (error) {
         console.log(error);
@@ -59,7 +82,7 @@ const verifyTransactionOnBackend = async (transactionId) => {
 
 const makePayment = (payment) => {
     FlutterwaveCheckout({
-        public_key: "FLWPUBK_TEST-3ff5792905cbfdca6a7016d089688a29-X",
+        public_key: props.flwPublicKey,
         tx_ref: payment.transaction_reference,
         amount: payment.amount ?? 1000,
         currency: "UGX",
@@ -70,12 +93,11 @@ const makePayment = (payment) => {
             phone_number: payment.phone_number.replace(/^\+/, ''),
         },
         customizations: {
-            title: "Buy SMS Bundle",
-            description: "Buy SMS Bundle",
+            title: "Deposit Money",
+            description: "Deposit Money",
             logo: "https://checkout.flutterwave.com/assets/img/rave-logo.png",
         },
         callback: function(payment) {
-            console.log(payment);
             if(payment.status === "successful") {
                 // Send AJAX verification request to backend
                 verifyTransactionOnBackend(payment.transaction_id);
@@ -98,8 +120,9 @@ const makePayment = (payment) => {
         },
         onclose: function(incomplete) {
             if (incomplete || window.verified === false) {
+                cancelTransactionOnBackend(payment);
                 Swal.fire({
-                    title: 'Payment not completed!',
+                    title: 'Payment was cancelled!',
                     text: 'Your payment was not completed, please try again.',
                     icon: 'error',
                     confirmButtonText: 'OK',
@@ -124,18 +147,21 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">SMS Bundle</h2>
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">Balance</h2>
         </template>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
               <div class="flex justify-between px-4 sm:px-6 lg:px-8 bg-white shadow py-6 rounded-md">
-                  <h2>SMS Bundle pricing coming here</h2>
+                  <h2 class="font-bold text-2xl">
+                      Total Balance: <span class="text-green-600">{{ accountBalance }}</span>
+                  </h2>
                   <button
                       @click="isOpen = true"
                       type="button"
-                      class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                      Buy SMS Bundle
+                      class="flex items-center gap-x-2.5 rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+                      <span>Deposit Money</span>
+                      <BanknotesIcon class="h-6 w-6" aria-hidden="true" />
                   </button>
               </div>
 
@@ -145,7 +171,7 @@ const submit = () => {
                 <div class="py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200 ">
                   <div>
                     <h2 class="text-xl font-semibold text-gray-800 ">
-                      SMS Bundle Topups
+                        Transactions
                     </h2>
                   </div>
                 </div>
@@ -161,7 +187,7 @@ const submit = () => {
                                       <div>
                                           <div>
                                               <h3 class="text-base py-4 border-b-2 border-gray-300 text-center font-semibold leading-6 text-gray-900" id="modal-title">
-                                                  Buy SMS Bundle
+                                                  Enter Deposit Details
                                               </h3>
                                               <div>
                                                   <div class="pt-6 mb-6">
@@ -179,15 +205,14 @@ const submit = () => {
                                                           show-code-on-list
                                                           no-search
                                                           no-country-selector
-                                                          placeholder="+256787584128"
+                                                          placeholder="Eg. 0787584128"
                                                           default-country-code="UG"
                                                           @update="results = $event"
                                                           :success="results?.isValid"
                                                           :only-countries="['UG']"
                                                           autocomplete="off"
                                                       />
-                                                      <span class="text-xs font-light italic">Must be a Uganda Phone number</span>
-<!--                                                      <pre>{{ results }}</pre>-->
+                                                      <span class="text-xs text-green-700 font-light italic">Must be a Ugandan Phone number</span>
                                                       <InputError class="mt-2" :message="form.errors.phone_number" />
                                                   </div>
                                                   <div class="mb-6">
@@ -232,10 +257,6 @@ const submit = () => {
                           <th scope="col"
                               class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
                             Date</th>
-                            <th scope="col"
-                                class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
-                                Number of SMS(es)
-                            </th>
                           <th scope="col"
                               class="px-3 py-3.5 text-center text-sm font-semibold text-gray-900">
                             Amount (UGX)
@@ -250,9 +271,6 @@ const submit = () => {
                           <tr v-for="smsBundle in smsBundles.data" :key="smsBundle.id">
                             <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
                               <span>{{ smsBundle.createdAt }}</span>
-                            </td>
-                            <td class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0">
-                              <span>{{ smsBundle.numberOfSms }}</span>
                             </td>
                               <td class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0">
                                   <span>{{ smsBundle.amount }}</span>
@@ -272,6 +290,22 @@ const submit = () => {
                         </tbody>
                       </table>
                     </div>
+
+                  <!--Pagination-->
+                  <div v-if="smsBundles.last_page > 1">
+                      <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
+                          <div>
+                              <Link
+                                  preserve-scroll
+                                  v-for="link in smsBundles.links"
+                                  :href="link.url ?? ''"
+                                  v-html="link.label"
+                                  :class="link.active ? 'relative z-10 inline-flex items-center bg-blue-500 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500': 'relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0'"
+                              />
+                          </div>
+                      </div>
+              </div>
+
                   </div>
                 </div>
               </div>

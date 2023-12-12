@@ -35,7 +35,7 @@ let submit = () => {
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-bold text-2xl tracking-tight text-gray-900 leading-tight">
                 {{ group.title }}
             </h2>
         </template>
@@ -85,7 +85,7 @@ let submit = () => {
                                                     show-code-on-list
                                                     no-search
                                                     no-country-selector
-                                                    placeholder="+256787584128"
+                                                    placeholder="Eg. 0787584128"
                                                     default-country-code="UG"
                                                     @update="results = $event"
                                                     :success="results?.isValid"
@@ -169,7 +169,7 @@ let submit = () => {
                         </div>
 
                     <!--Pagination-->
-                    <div>
+                    <div v-if="contacts.last_page > 1">
                         <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-6 sm:px-6">
                             <div>
                                 <Link
