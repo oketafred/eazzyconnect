@@ -12,6 +12,12 @@ const form =  useForm({
     file: null
 });
 
+const formattedErrorString = (error) => {
+    return error
+        .replace('The phone_number', '')
+        .replace('.', '');
+}
+
 let submit = () => {
     form.post(route('contact-import.store', group.id));
 }
@@ -39,7 +45,10 @@ let submit = () => {
                         </div>
                         <div class="ml-3">
                             <template v-for="error in JSON.parse($page.props.flash.import_error)">
-                                <h3 class="text-sm font-medium text-red-800">{{ error }}</h3>
+                                <h3 class="text-sm font-medium text-red-800">
+                                    {{ error.values.phone_number }}
+                                    {{ formattedErrorString(error.errors[0]) }} at row {{ error.row }}
+                                </h3>
                             </template>
                         </div>
                     </div>
