@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps({
     successfulSmsCount: { type: String, required: true },
@@ -149,28 +150,49 @@ const props = defineProps({
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                          <tr v-for="sms in smses" :key="sms.id">
-                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                              <span>{{ sms.created_at }}</span>
-                            </td>
-                            <td class="px-3 py-5 text-sm text-gray-500">
-                              <span class="flex-wrap">
-                                {{ sms.message }}
-                              </span>
-                            </td>
-                            <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
-                                {{ sms.phone_number }}
-                            </td>
-                            <td class="whitespace-nowrap px-3 py-5 text-gray-500">
+                            <template v-if="smses.length">
+                                  <tr v-for="sms in smses" :key="sms.id">
+                                      <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                          <span>{{ sms.created_at }}</span>
+                                      </td>
+                                      <td class="px-3 py-5 text-sm text-gray-500">
+                                  <span class="flex-wrap">
+                                    {{ sms.message }}
+                                  </span>
+                                      </td>
+                                      <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
+                                          {{ sms.phone_number }}
+                                      </td>
+                                      <td class="whitespace-nowrap px-3 py-5 text-gray-500">
 
-                                <span
-                                    class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
-                                    :class="{ 'bg-green-500': sms.status === 'Success', 'bg-red-500': sms.status !== 'Success' }"
-                                >
-                                    {{ sms.status }}
-                              </span>
-                            </td>
-                          </tr>
+                                    <span
+                                        class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
+                                        :class="{ 'bg-green-500': sms.status === 'Success', 'bg-red-500': sms.status !== 'Success' }"
+                                    >
+                                        {{ sms.status }}
+                                  </span>
+                                      </td>
+                                  </tr>
+                              </template>
+                            <template v-else>
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="flex justify-center items-center">
+                                            <div class="py-20 text-center text-gray-600">
+                                                <div class="flex justify-center">
+                                                    <XMarkIcon
+                                                        class="h-12 w-12 font-bold p-2 bg-gray-400/20 rounded-full"
+                                                        aria-hidden="true"
+                                                    />
+                                                </div>
+                                                <div class="font-bold mt-3">
+                                                    No Records Available
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
                         </tbody>
                       </table>
                     </div>

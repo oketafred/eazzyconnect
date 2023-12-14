@@ -2,6 +2,7 @@
 import { Head, Link } from '@inertiajs/vue3';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { PencilSquareIcon, PencilIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon } from '@heroicons/vue/24/outline/index.js'
 
 defineProps({
     groups: {
@@ -64,35 +65,56 @@ defineProps({
                                     </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                    <tr v-for="group in groups.data" :key="group.id">
-                                        <td class="py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                            <span>{{ group.createdAt }}</span>
-                                        </td>
-                                        <td class="px-3 py-5 text-sm text-gray-500">
-                                          <span class="flex-wrap truncate">
-                                            {{ group.title}}
-                                          </span>
-                                        </td>
-                                        <td class="px-3 py-5 text-sm text-gray-500">
-                                          <span class="flex-wrap truncate">
-                                            {{ group.description}}
-                                          </span>
-                                        </td>
-                                        <td class="flex justify-end gap-3.5 relative whitespace-nowrap py-5 text-right text-sm font-medium sm:pr-0">
-                                            <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
-                                                <span>View Contacts</span>
-                                                <ClipboardDocumentListIcon class="h-4 w-4" aria-hidden="true" />
-                                            </Link>
-                                            <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
-                                                <span>Add Contacts</span>
-                                                <PencilSquareIcon class="h-4 w-4" aria-hidden="true" />
-                                            </Link>
-                                            <Link :href="`/groups/${group.id}/edit`" class="flex items-center gap-x-2.5 bg-white border border-green-600 text-xs text-green-600 py-2.5 px-4 rounded hover:bg-green-600 hover:text-white">
-                                                <span>Edit</span>
-                                                <PencilIcon class="h-4 w-4" aria-hidden="true" />
-                                            </Link>
-                                        </td>
-                                    </tr>
+                                        <template v-if="Object.keys(groups.data).length">
+                                            <tr v-for="group in groups.data" :key="group.id">
+                                                <td class="py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                    <span>{{ group.createdAt }}</span>
+                                                </td>
+                                                <td class="px-3 py-5 text-sm text-gray-500">
+                                              <span class="flex-wrap truncate">
+                                                {{ group.title}}
+                                              </span>
+                                                </td>
+                                                <td class="px-3 py-5 text-sm text-gray-500">
+                                              <span class="flex-wrap truncate">
+                                                {{ group.description}}
+                                              </span>
+                                                </td>
+                                                <td class="flex justify-end gap-3.5 relative whitespace-nowrap py-5 text-right text-sm font-medium sm:pr-0">
+                                                    <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
+                                                        <span>View Contacts</span>
+                                                        <ClipboardDocumentListIcon class="h-4 w-4" aria-hidden="true" />
+                                                    </Link>
+                                                    <Link :href="`/groups/${group.id}/show`" class="flex items-center gap-x-2.5 bg-white border border-indigo-600 text-xs text-indigo-600 py-2.5 px-4 rounded hover:bg-indigo-600 hover:text-white">
+                                                        <span>Add Contacts</span>
+                                                        <PencilSquareIcon class="h-4 w-4" aria-hidden="true" />
+                                                    </Link>
+                                                    <Link :href="`/groups/${group.id}/edit`" class="flex items-center gap-x-2.5 bg-white border border-green-600 text-xs text-green-600 py-2.5 px-4 rounded hover:bg-green-600 hover:text-white">
+                                                        <span>Edit</span>
+                                                        <PencilIcon class="h-4 w-4" aria-hidden="true" />
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                        <template v-else>
+                                            <tr>
+                                                <td colspan="4">
+                                                    <div class="flex justify-center items-center">
+                                                        <div class="py-20 text-center text-gray-600">
+                                                            <div class="flex justify-center">
+                                                                <XMarkIcon
+                                                                    class="h-12 w-12 font-bold p-2 bg-gray-400/20 rounded-full"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </div>
+                                                            <div class="font-bold mt-3">
+                                                                No Records Available
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
                                     </tbody>
                                 </table>
                             </div>

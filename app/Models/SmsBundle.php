@@ -16,7 +16,10 @@ class SmsBundle extends Model
     public const STATUS_PENDING = 'pending';
     public const STATUS_SUCCESSFUL = 'successful';
     public const STATUS_FAILED = 'failed';
+    public const STATUS_ERROR = 'error';
     public const STATUS_CANCELLED = 'cancelled';
+    public const STATUS_FAILED_FROM_SYSTEM = 'failed_from_system';
+    public const FAILED_FROM_SYSTEM_MESSAGE = 'Transaction process incomplete';
 
     protected $fillable = [
         'user_id',
@@ -30,6 +33,8 @@ class SmsBundle extends Model
         'transaction_fee',
         'status',
         'payment_type',
+        'checked_at',
+        'failure_reason',
     ];
 
     protected static function boot(): void

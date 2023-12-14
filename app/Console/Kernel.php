@@ -12,6 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->command('eazzyconnect:update-transaction-checked-at')
+            ->everyMinute();
         // $schedule->command('inspire')->hourly();
     }
 

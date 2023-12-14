@@ -38,7 +38,7 @@ class SmsController extends Controller
 
         $user = Auth::user();
 
-        $phone_numbers = explode(',', $request->input('phone_number'));
+        $phone_numbers = array_unique(explode(',', $request->input('phone_number')));
 
         $group_id = $request->input('group_id');
         if ($request->input('smsType') === 'group') {
