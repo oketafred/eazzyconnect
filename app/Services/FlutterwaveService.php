@@ -35,4 +35,12 @@ class FlutterwaveService
             ->throw()
             ->json();
     }
+
+    public function verifyTransactionByReference($transaction_reference)
+    {
+        return Http::acceptJson()
+            ->withToken($this->secretKey)
+            ->get($this->baseUrl . "/transactions/verify_by_reference?tx_ref=" . $transaction_reference)
+            ->json();
+    }
 }

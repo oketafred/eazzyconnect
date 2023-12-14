@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, Link } from '@inertiajs/vue3'
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { computed, ref, watch, watchEffect } from 'vue'
 
@@ -74,7 +74,7 @@ let submit = () => {
                     </div>
 
                     <div class="mb-6" v-if="form.smsType === 'group'">
-                        <template v-if="groups">
+                        <template v-if="groups.length">
                             <label for="location" class="block text-sm font-medium leading-6 text-gray-900">Group</label>
                             <select v-model="form.group_id" class="mt-2 block w-full rounded-md border-0 py-1.5 pl-3 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-indigo-600 sm:text-sm sm:leading-6">
                                 <option value="null">Select group</option>
@@ -88,7 +88,15 @@ let submit = () => {
                             </select>
                         </template>
                         <template v-else>
-                            <h4>No Group found. Click here to create a group</h4>
+                            <p class="text-sm text-gray-500 italic">
+                                No Group found.
+                                <Link
+                                    :href="route('groups.create')"
+                                    class="font-medium text-indigo-600 underline hover:text-indigo-700"
+                                >
+                                    Click here to create a group
+                                </Link>
+                            </p>
                         </template>
                     </div>
 
@@ -105,6 +113,13 @@ let submit = () => {
                                id="phone_number"
                                required
                         >
+                        <div>
+                            <p class="text-sm text-gray-500 italic">
+                                Duplicate numbers will be removed and not charged.
+                                Separate multiple numbers with comma.
+                                Accepted number format are: <span class="font-bold">+256xxxxxx, 256xxxxxx</span>
+                            </p>
+                        </div>
                         <div v-if="form.errors.phone_number" class="text-red-400 text-xs">
                             {{ form.errors.phone_number }}
                         </div>

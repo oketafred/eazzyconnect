@@ -11,14 +11,12 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
     <div>
         <div class="min-h-screen bg-gray-100">
             <div class="min-h-full">
-                <Disclosure as="nav" class="bg-gray-800" v-slot="{ open }">
+                <Disclosure as="nav" class="fixed top-0 left-0 right-0 bg-gray-800" v-slot="{ open }">
                     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                         <div class="flex h-16 items-center justify-between">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0">
                                     <img class="h-8 w-8" :src="Logo" alt="EazzyConnect Logo" />
-<!--                                    <img class="h-8 w-8" src="" alt="EazzyConnect Logo" />-->
-<!--                                    <img class="h-8 w-8" src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500" alt="Your Company" />-->
                                 </div>
                                 <div class="hidden md:block">
                                     <div class="ml-10 flex items-baseline space-x-4">
@@ -53,7 +51,7 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
                                             </MenuButton>
                                         </div>
                                         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
-                                            <MenuItems class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                            <MenuItems class="absolute right-0 z-50 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                                 <MenuItem v-slot="{ active }">
                                                     <Link :class="[active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700']" :href="route('profile.edit')"> Profile </Link>
                                                 </MenuItem>
@@ -158,7 +156,7 @@ import { Bars3Icon, XMarkIcon, UserCircleIcon } from '@heroicons/vue/24/outline'
             </div>
 
             <!-- Page Heading -->
-            <header class="bg-white shadow" v-if="$slots.header">
+            <header class="top-16 mt-16 left-0 right-0 bg-white shadow" v-if="$slots.header">
                 <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

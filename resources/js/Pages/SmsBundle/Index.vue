@@ -7,6 +7,7 @@ import axios from 'axios';
 import InputError from '@/Components/InputError.vue';
 import MazPhoneNumberInput from 'maz-ui/components/MazPhoneNumberInput';
 import { BanknotesIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon } from '@heroicons/vue/24/outline/index.js'
 
 const props = defineProps({
     accountBalance: String,
@@ -62,24 +63,6 @@ const verifyTransactionOnBackend = async (transactionId) => {
     }
 }
 
-const cancelTransactionOnBackend = async (payment) => {
-    console.log('transactionInProgress.value', transactionInProgress.value);
-
-    const { transaction_reference } = transactionInProgress.value;
-
-    if (!transaction_reference) {
-        return;
-    }
-
-    try {
-        const response = await axios
-            .post(`/cancel-transaction/${transaction_reference}`);
-        const payment = await response.data;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 const makePayment = (payment) => {
     FlutterwaveCheckout({
         public_key: props.flwPublicKey,
@@ -120,7 +103,6 @@ const makePayment = (payment) => {
         },
         onclose: function(incomplete) {
             if (incomplete || window.verified === false) {
-                cancelTransactionOnBackend(payment);
                 Swal.fire({
                     title: 'Payment was cancelled!',
                     text: 'Your payment was not completed, please try again.',
@@ -268,25 +250,46 @@ const submit = () => {
                         </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200 bg-white">
-                          <tr v-for="smsBundle in smsBundles.data" :key="smsBundle.id">
-                            <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                              <span>{{ smsBundle.createdAt }}</span>
-                            </td>
-                              <td class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                  <span>{{ smsBundle.amount }}</span>
-                              </td>
-                            <td class="whitespace-nowrap px-3 text-right py-5 text-gray-500">
+                          <template v-if="Object.keys(smsBundles.data).length">
+                              <tr v-for="smsBundle in smsBundles.data" :key="smsBundle.id">
+                                  <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                      <span>{{ smsBundle.createdAt }}</span>
+                                  </td>
+                                  <td class="whitespace-nowrap text-center py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                      <span>{{ smsBundle.amount }}</span>
+                                  </td>
+                                  <td class="whitespace-nowrap px-3 text-right py-5 text-gray-500">
                               <span
                                   :class="{
                                     'border-green-600 bg-green-100': smsBundle.status === 'Successful',
                                     'border-orange-400 bg-orange-100': smsBundle.status === 'Pending',
                                     'border-red-600 bg-red-100': smsBundle.status === 'Failed'
                                    }"
-                                class="inline-flex items-center justify-center rounded-md border-[0.5px] w-20 text-black px-2 py-1 text-xs">
+                                  class="inline-flex items-center justify-center rounded-md border-[0.5px] w-20 text-black px-2 py-1 text-xs">
                                 {{ smsBundle.status }}
                               </span>
-                            </td>
-                          </tr>
+                                  </td>
+                              </tr>
+                          </template>
+                          <template v-else>
+                              <tr>
+                                  <td colspan="4">
+                                      <div class="flex justify-center items-center">
+                                          <div class="py-20 text-center text-gray-600">
+                                              <div class="flex justify-center">
+                                                  <XMarkIcon
+                                                      class="h-12 w-12 font-bold p-2 bg-gray-400/20 rounded-full"
+                                                      aria-hidden="true"
+                                                  />
+                                              </div>
+                                              <div class="font-bold mt-3">
+                                                  No Records Available
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </td>
+                              </tr>
+                          </template>
                         </tbody>
                       </table>
                     </div>

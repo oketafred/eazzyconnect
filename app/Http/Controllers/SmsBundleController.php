@@ -32,9 +32,10 @@ class SmsBundleController extends Controller
                     'id' => $sms_bundle->id,
                     'createdAt' => $sms_bundle->created_at->diffForHumans(),
                     'amount' => Number::format($sms_bundle->amount),
-                    'paymentType' => $sms_bundle->payment_type,
-                    'status' => ucfirst($sms_bundle->status),
-                    'transactionReference' => $sms_bundle->transaction_reference,
+                    'status' => Str::of($sms_bundle->status)
+                        ->contains(SmsBundle::STATUS_FAILED) ?
+                        ucfirst(SmsBundle::STATUS_FAILED) :
+                        ucfirst($sms_bundle->status),
                 ]),
         ]);
     }
@@ -83,27 +84,6 @@ class SmsBundleController extends Controller
             return response()->json([
                 'message' => 'Transaction successful'
             ], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            Log::error($exception);
-            return response()->json([
-                'message' => 'Something went wrong. Please try again later.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function cancelTransaction(Request $request, $transaction_reference)
-    {
-        Log::info($transaction_reference);
-        try {
-            SmsBundle::query()
-                ->where('transaction_reference', $transaction_reference)
-                ->update([
-                    'status' => SmsBundle::STATUS_CANCELLED,
-                ]);
-            return response()->json([
-                'message' => 'Transaction was cancelled!'
-            ], Response::HTTP_OK);
-
         } catch (\Exception $exception) {
             Log::error($exception);
             return response()->json([

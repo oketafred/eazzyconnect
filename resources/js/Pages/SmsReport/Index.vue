@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { XMarkIcon } from '@heroicons/vue/24/outline/index.js'
 
 const props = defineProps({
     smses: { type: Object, required: true },
@@ -53,33 +54,54 @@ const props = defineProps({
                                     </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200 bg-white">
-                                    <tr v-for="sms in smses.data" :key="sms.id">
-                                        <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                            <span>{{ sms.createdAt }}</span>
-                                        </td>
-                                        <td class="px-3 py-5 text-sm text-gray-500">
-                                          <span class="flex-wrap">
-                                            {{ sms.message }}
-                                          </span>
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
-                                            {{ sms.phoneNumber }}
-                                        </td>
-                                        <td class="whitespace-nowrap font-bold px-3 py-5 text-gray-500 text-sm">
-                                            {{ sms.groupTitle }}
-                                        </td>
-                                        <td class="whitespace-nowrap text-center px-3 py-5 text-gray-500 text-sm">
-                                            {{ sms.cost }}
-                                        </td>
-                                        <td class="whitespace-nowrap px-3 py-5 text-gray-500">
-                                          <span
-                                              class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
-                                              :class="{ 'bg-green-500': sms.status === 'Success', 'bg-red-500': sms.status !== 'Success' }"
-                                          >
-                                            {{ sms.status }}
-                                          </span>
-                                        </td>
-                                    </tr>
+                                        <template v-if="Object.keys(smses.data).length">
+                                            <tr v-for="sms in smses.data" :key="sms.id">
+                                                <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
+                                                    <span>{{ sms.createdAt }}</span>
+                                                </td>
+                                                <td class="px-3 py-5 text-sm text-gray-500">
+                                              <span class="flex-wrap">
+                                                {{ sms.message }}
+                                              </span>
+                                                </td>
+                                                <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
+                                                    {{ sms.phoneNumber }}
+                                                </td>
+                                                <td class="whitespace-nowrap font-bold px-3 py-5 text-gray-500 text-sm">
+                                                    {{ sms.groupTitle }}
+                                                </td>
+                                                <td class="whitespace-nowrap text-center px-3 py-5 text-gray-500 text-sm">
+                                                    {{ sms.cost }}
+                                                </td>
+                                                <td class="whitespace-nowrap px-3 py-5 text-gray-500">
+                                              <span
+                                                  class="inline-flex items-center rounded-md px-2 py-1 text-xs text-white ring-1 ring-inset ring-green-600/20"
+                                                  :class="{ 'bg-green-500': sms.status === 'Success', 'bg-red-500': sms.status !== 'Success' }"
+                                              >
+                                                {{ sms.status }}
+                                              </span>
+                                                </td>
+                                            </tr>
+                                        </template>
+                                        <template v-else>
+                                            <tr>
+                                                <td colspan="6">
+                                                    <div class="flex justify-center items-center">
+                                                        <div class="py-20 text-center text-gray-600">
+                                                            <div class="flex justify-center">
+                                                                <XMarkIcon
+                                                                    class="h-12 w-12 font-bold p-2 bg-gray-400/20 rounded-full"
+                                                                    aria-hidden="true"
+                                                                />
+                                                            </div>
+                                                            <div class="font-bold mt-3">
+                                                                No Records Available
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </template>
                                     </tbody>
                                 </table>
                             </div>
