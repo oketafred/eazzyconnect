@@ -15,13 +15,9 @@ class PaymentWebhookApiController extends Controller
         try {
             $payload = $request->all();
 
-            $transaction_fees = ((2.5/100) * $payload['amount']) + ((0.5/100) * $payload['amount']);
-            $amount = $payload['amount'] - $transaction_fees;
-
             $smsBundle = SmsBundle::query()
                 ->where('external_id', $payload['internal_reference'])
                 ->where('transaction_reference', $payload['customer_reference'])
-                ->where('amount', $amount)
                 ->where('status', SmsBundle::STATUS_PENDING)
                 ->where('phone_number', $payload['msisdn'])
                 ->first();
