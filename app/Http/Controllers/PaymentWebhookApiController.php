@@ -15,10 +15,13 @@ class PaymentWebhookApiController extends Controller
         try {
             $payload = $request->all();
 
+            $transaction_fees = ((2.5/100) * $payload['amount']) + ((0.5/100) * $payload['amount']);
+            $amount = $payload['amount'] - $transaction_fees;
+
             $smsBundle = SmsBundle::query()
                 ->where('external_id', $payload['internal_reference'])
                 ->where('transaction_reference', $payload['customer_reference'])
-                ->where('amount', $payload['amount'])
+                ->where('amount', $amount)
                 ->where('status', SmsBundle::STATUS_PENDING)
                 ->where('phone_number', $payload['msisdn'])
                 ->first();
@@ -31,8 +34,6 @@ class PaymentWebhookApiController extends Controller
             $smsBundle->payment_type = $payload['provider'];
             $smsBundle->transaction_fee = $payload['charge'];
             $smsBundle->save();
-
-            // dispatch event payload
 
             return response()->json([
                 'message' => 'Transaction successful'
