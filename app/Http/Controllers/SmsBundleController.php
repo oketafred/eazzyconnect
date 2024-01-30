@@ -73,6 +73,10 @@ class SmsBundleController extends Controller
                 "amount" => $sms_bundle->amount,
             ]);
 
+            $sms_bundle->update([
+                'external_id' => $response['internal_reference']
+            ]);
+
             return response()->json($response, 201);
         } catch (Exception $exception) {
             return response()->json([

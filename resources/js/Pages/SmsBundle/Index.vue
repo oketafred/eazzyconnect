@@ -191,7 +191,7 @@ const handleSubmit = () => {
                                   <td class="whitespace-nowrap px-3 text-right py-5 text-gray-500">
                               <span
                                   :class="{
-                                    'border-green-600 bg-green-100': smsBundle.status === 'Successful',
+                                    'border-green-600 bg-green-100': smsBundle.status === 'Success',
                                     'border-orange-400 bg-orange-100': smsBundle.status === 'Pending',
                                     'border-red-600 bg-red-100': smsBundle.status === 'Failed'
                                    }"

@@ -14,7 +14,7 @@ class SmsBundle extends Model
     public const SMS_UNIT_PRICE = 30;
 
     public const STATUS_PENDING = 'pending';
-    public const STATUS_SUCCESSFUL = 'successful';
+    public const STATUS_SUCCESSFUL = 'success';
     public const STATUS_FAILED = 'failed';
     public const STATUS_ERROR = 'error';
     public const STATUS_CANCELLED = 'cancelled';
