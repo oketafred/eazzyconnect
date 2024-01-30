@@ -63,6 +63,10 @@ class SmsBundleController extends Controller
                 'customer_email' =>  $user?->email,
                 'phone_number' =>  $validated['phone_number'],
                 'transaction_reference' =>  $transaction_reference,
+                'transaction_fee' => ((2.5/100) * $validated['amount']),
+                'transaction_percent' => 2.5,
+                'additional_fee' => ((0.5/100) * $validated['amount']),
+                'additional_percent' => 0.5,
             ]);
 
             $response = $this->paymentService->requestPayment([
@@ -70,7 +74,7 @@ class SmsBundleController extends Controller
                 "reference" => $sms_bundle->transaction_reference,
                 "msisdn" => $sms_bundle->phone_number,
                 "currency" => $sms_bundle->currency_code,
-                "amount" => $sms_bundle->amount,
+                "amount" => $sms_bundle->amount + $sms_bundle->transaction_fee + $sms_bundle->additional_fee,
             ]);
 
             $sms_bundle->update([

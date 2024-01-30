@@ -32,6 +32,8 @@ class PaymentWebhookApiController extends Controller
             $smsBundle->transaction_fee = $payload['charge'];
             $smsBundle->save();
 
+            // dispatch event payload
+
             return response()->json([
                 'message' => 'Transaction successful'
             ], Response::HTTP_OK);
