@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SmsBundle;
 use App\Rules\Phone;
-use App\Services\FlutterwaveService;
+use App\Services\PaymentService;
+use Exception;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +17,7 @@ use Inertia\Inertia;
 
 class SmsBundleController extends Controller
 {
-    public function __construct(public FlutterwaveService $flutterwaveService)
+    public function __construct(public PaymentService $paymentService)
     {
     }
 
@@ -23,7 +25,6 @@ class SmsBundleController extends Controller
     {
         return Inertia::render('SmsBundle/Index', [
             'accountBalance' => Number::currency(Auth::user()?->accountBalance(), 'UGX'),
-            'flwPublicKey' => config('flutterwave.public_key'),
             'smsBundles' => SmsBundle::query()
                 ->orderByDesc('id')
                 ->paginate(20)
@@ -40,6 +41,9 @@ class SmsBundleController extends Controller
         ]);
     }
 
+    /**
+     * @throws RequestException
+     */
     public function store(Request $request)
     {
         $validated = $this->validate($request, [
@@ -49,46 +53,31 @@ class SmsBundleController extends Controller
 
         $user = Auth::user();
 
-        $sms_bundle = $request->user()->sms_bundle()->create([
-            'amount' =>  $validated['amount'],
-            'customer_name' =>  $user?->name,
-            'customer_email' =>  $user?->email,
-            'phone_number' =>  $validated['phone_number'],
-            'transaction_reference' =>  Str::uuid(),
-        ]);
-
-        return response()->json($sms_bundle);
-    }
-
-    public function verifyTransaction(Request $request, $transaction_id)
-    {
         try {
-            $verificationData = $this->flutterwaveService->verifyTransaction($transaction_id);
-            if ($verificationData['status'] === SmsBundle::STATUS_PENDING) {
-                return response()->json([
-                    'message' => 'Transaction is still pending'
-                ], Response::HTTP_BAD_REQUEST);
-            }
+            $transaction_reference = $this->paymentService->generateReference();
 
-            $payload = $verificationData['data'];
+            $sms_bundle = $request->user()->sms_bundle()->create([
+                'currency_code' => 'UGX',
+                'amount' =>  $validated['amount'],
+                'customer_name' =>  $user?->name,
+                'customer_email' =>  $user?->email,
+                'phone_number' =>  $validated['phone_number'],
+                'transaction_reference' =>  $transaction_reference,
+            ]);
 
-            SmsBundle::query()
-                ->where('transaction_reference', $payload['tx_ref'])
-                ->where('amount', $payload['amount'])
-                ->update([
-                    'status' => $payload['status'],
-                    'external_id' => $payload['id'],
-                    'payment_type' => $payload['payment_type']
-                ]);
+            $response = $this->paymentService->requestPayment([
+                "account_no" => config('relworx.relworx_account_no'),
+                "reference" => $sms_bundle->transaction_reference,
+                "msisdn" => $sms_bundle->phone_number,
+                "currency" => $sms_bundle->currency_code,
+                "amount" => $sms_bundle->amount,
+            ]);
 
+            return response()->json($response, 201);
+        } catch (Exception $exception) {
             return response()->json([
-                'message' => 'Transaction successful'
-            ], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            Log::error($exception);
-            return response()->json([
-                'message' => 'Something went wrong. Please try again later.'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+                'error' => $exception->getMessage()
+            ], 500);
         }
     }
 }

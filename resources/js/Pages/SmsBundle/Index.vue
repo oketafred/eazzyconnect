@@ -11,115 +11,44 @@ import { XMarkIcon } from '@heroicons/vue/24/outline/index.js'
 
 const props = defineProps({
     accountBalance: String,
-    flwPublicKey: String,
     smsBundles: Object
 });
 
 const isOpen = ref(false);
 const isLoading = ref(false);
 const results = ref();
-const transactionInProgress = ref(null);
 
 const form = useForm({
     amount: null,
     phone_number: null
 });
 
-onMounted(() => {
-    const script = document.createElement('script');
-    script.src = 'https://checkout.flutterwave.com/v3.js';
-    script.async = true;
-    script.onload = () => {
-        window.FlutterwaveCheckout;
-    };
-    document.body.appendChild(script);
-});
-
-const handleSubmit = async () => {
+const handleSubmit = () => {
     isLoading.value = true;
-    try {
-        const response = await axios.post('/sms_bundle/payment', {
-            amount: form.amount,
-            phone_number: form.phone_number
-        });
-        const payment = await response.data;
-        transactionInProgress.value = payment;
-
-        isLoading.value = false;
+    axios.post('/sms_bundle/payment', {
+        amount: form.amount,
+        phone_number: form.phone_number
+    }).then(response => {
+        console.log('response', response.data);
         isOpen.value = false;
-        makePayment(payment);
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const verifyTransactionOnBackend = async (transactionId) => {
-    try {
-        const response = await axios
-            .post(`/verify-transaction/${transactionId}`);
-        const payment = await response.data;
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const makePayment = (payment) => {
-    FlutterwaveCheckout({
-        public_key: props.flwPublicKey,
-        tx_ref: payment.transaction_reference,
-        amount: payment.amount ?? 1000,
-        currency: "UGX",
-        payment_options: "mobilemoneyuganda",
-        customer: {
-            email: payment.customer_email,
-            name: payment.customer_name,
-            phone_number: payment.phone_number.replace(/^\+/, ''),
-        },
-        customizations: {
-            title: "Deposit Money",
-            description: "Deposit Money",
-            logo: "https://checkout.flutterwave.com/assets/img/rave-logo.png",
-        },
-        callback: function(payment) {
-            if(payment.status === "successful") {
-                // Send AJAX verification request to backend
-                verifyTransactionOnBackend(payment.transaction_id);
-                Swal.fire({
-                    title: 'Payment completed!',
-                    text: 'Your payment has been completed successfully.',
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Payment not completed!',
-                    text: 'please try again.',
-                });
-            }
-        },
-        onclose: function(incomplete) {
-            if (incomplete || window.verified === false) {
-                Swal.fire({
-                    title: 'Payment was cancelled!',
-                    text: 'Your payment was not completed, please try again.',
-                    icon: 'error',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: false,
-                }).then(() => {
-                    window.location.reload();
-                });
-            }
-        },
-    });
-}
-
-const submit = () => {
-    // send to the backend
-    // send to flutterwave
+        Swal.fire({
+            title: 'Payment request in progress!',
+            text: 'Please enter your PIN to complete the transaction.',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            allowOutsideClick: false,
+        }).then(() => window.location.reload());
+    }).catch(error => {
+        console.log('error', error);
+        isOpen.value = false;
+        Swal.fire({
+            icon: 'error',
+            title: 'Payment not completed!',
+            text: 'Something went wrong. please try again.',
+        }).then(() => window.location.reload());
+    }).finally(() => {
+        isLoading.value = false;
+    })
 }
 
 </script>
@@ -217,6 +146,7 @@ const submit = () => {
                                       <div class="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
                                           <button
                                               type="submit"
+                                              :disabled="isLoading"
                                               class="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:col-start-2">
                                               {{ isLoading ? '...Loading' : 'Submit' }}
                                           </button>

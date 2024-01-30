@@ -73,9 +73,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sms_bundle/payment', [SmsBundleController::class, 'store'])
         ->name('sms-bundle.payment');
 
-    Route::post('/verify-transaction/{transaction_id}', [SmsBundleController::class, 'verifyTransaction'])
-        ->name('sms-bundle.payment.verify');
-
     Route::get('/sms/create', [SmsController::class, 'create'])
         ->name('sms.create');
     Route::post('/sms', [SmsController::class, 'store'])
