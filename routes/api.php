@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/webhook/flutterwave', [PaymentWebhookApiController::class, 'webhook'])
+Route::post('/webhook/relworx', [PaymentWebhookApiController::class, 'webhook'])
     ->name('webhook');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
