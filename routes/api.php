@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/webhook/relworx', [PaymentWebhookApiController::class, 'webhook'])
-    ->name('webhook');
+    ->name('webhook')
+    ->middleware('relworx');
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
