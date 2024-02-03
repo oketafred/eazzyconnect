@@ -66,7 +66,7 @@ let submit = () => {
                     </div>
                     <div class="px-4 sm:px-6 lg:px-8 py-6">
                         <div class="flex gap-3 mt-5">
-                            <a :href="route('contact.import')" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Download Template</a>
+                            <a href="/contact/download-template" download class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">Download Template</a>
                         </div>
                     </div>
                 </div>
