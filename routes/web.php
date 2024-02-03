@@ -59,9 +59,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/contact/download-template', function () {
         $path = public_path('ContactsTemplate.csv');
 
-        return response()->download($path, 'ContactsTemplate', [
-            'Content-Type' => 'text/csv',
-        ]);
+        return response()->download($path);
     })->name('contact.import');
 
     Route::post('/contact/{group}', [ContactController::class, 'store'])

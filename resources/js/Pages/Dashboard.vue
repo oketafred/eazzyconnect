@@ -22,7 +22,7 @@ const props = defineProps({
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div>
                 <ul role="list" class="mt-3 grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
                   <li class="col-span-1 flex rounded-md shadow-sm">
@@ -103,7 +103,6 @@ const props = defineProps({
                     </div>
                   </li>
                 </ul>
-
               </div>
 
 
