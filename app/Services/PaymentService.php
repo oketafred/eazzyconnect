@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
-use Illuminate\Http\Client\RequestException;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\RequestException;
 
-class PaymentService {
-
+class PaymentService
+{
     private string $baseUrl;
+
     private string $accountNo;
+
     private string $apiKey;
 
     public function __construct()
@@ -21,17 +22,16 @@ class PaymentService {
     }
 
     /**
-     *
-     * @param array $data
      * @return array|mixed
+     *
      * @throws RequestException
      */
     public function requestPayment(array $data)
     {
         $headers = [
-            "Content-Type" => "application/json",
-            "Accept" => "application/vnd.relworx.v2",
-            "Authorization" => "Bearer {$this->apiKey}"
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/vnd.relworx.v2',
+            'Authorization' => "Bearer {$this->apiKey}",
         ];
 
         return Http::withHeaders($headers)
@@ -42,6 +42,6 @@ class PaymentService {
 
     public function generateReference(): string
     {
-        return  substr('RELWORX-' . Str::uuid(), 0, 30);
+        return substr('RELWORX-'.Str::uuid(), 0, 30);
     }
 }

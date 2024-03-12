@@ -2,23 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\SendBulkSmsJob;
-use App\Models\Contact;
-use App\Models\Group;
 use App\Models\Sms;
-use Exception;
+use App\Models\Group;
+use App\Models\Contact;
+use App\Jobs\SendBulkSmsJob;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class SmsController extends Controller
 {
     public function create()
     {
         return inertia('Sms/Create', [
-            'groups' => Group::query()->get()
+            'groups' => Group::query()->get(),
         ]);
     }
 
@@ -51,7 +50,8 @@ class SmsController extends Controller
         $message = $request->input('message');
 
         if ($user?->accountBalance() < Sms::COST_PER_SMS) {
-            Log::error("Account balance is not is enough");
+            Log::error('Account balance is not is enough');
+
             return redirect()->back()
                 ->with('error', 'Insufficient balance, You need a minimum of UGX 30 to send an SMS');
         }
@@ -74,7 +74,7 @@ class SmsController extends Controller
 
     private function numberOfSms(string $message, array $phone_numbers): int
     {
-        return (int)(ceil(strlen($message) / Sms::MAX_NUMBER_OF_CHARACTERS_IN_AN_SMS) * count($phone_numbers));
+        return (int) (ceil(strlen($message) / Sms::MAX_NUMBER_OF_CHARACTERS_IN_AN_SMS) * count($phone_numbers));
     }
 
     private function totalSmsPrice(int $numberOfSms)

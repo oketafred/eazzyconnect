@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class RelworxMiddleware
@@ -16,18 +16,18 @@ class RelworxMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $relworx_header = explode(",", $request->header('relworx-signature'));
+        $relworx_header = explode(',', $request->header('relworx-signature'));
         $relworxSignature = Str::after($relworx_header[1], 'v=');
 
         $timestamp = Str::after($relworx_header[0], 't=');
         $url = $request->fullUrl();
         $webhook_key = config('relworx.webhook_key');
 
-        $params = array(
-            "status" => $request->get('status'),
-            "customer_reference" => $request->get('customer_reference'),
-            "internal_reference" => $request->get('internal_reference'),
-        );
+        $params = [
+            'status' => $request->get('status'),
+            'customer_reference' => $request->get('customer_reference'),
+            'internal_reference' => $request->get('internal_reference'),
+        ];
 
         $generatedSignature = $this->generateSignature($webhook_key, $timestamp, $url, $params);
 

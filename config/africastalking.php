@@ -13,5 +13,5 @@ return [
     | Africastalking SMS ApiKey.
     |-------------------------------------------------------------
     */
-    'apiKey' => env('AFRICASTALKING_API_KEY', '')
+    'apiKey' => env('AFRICASTALKING_API_KEY', ''),
 ];

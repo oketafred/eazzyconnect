@@ -22,7 +22,7 @@ class PaymentWebhookApiController extends Controller
                 ->where('phone_number', $payload['msisdn'])
                 ->first();
 
-            if (!$smsBundle) {
+            if (! $smsBundle) {
                 throw new Exception('SmsBundle not found for payment webhook');
             }
 
@@ -32,13 +32,13 @@ class PaymentWebhookApiController extends Controller
             $smsBundle->save();
 
             return response()->json([
-                'message' => 'Transaction successful'
+                'message' => 'Transaction successful',
             ], Response::HTTP_OK);
         } catch (\Exception $exception) {
-            Log::error('Error in payment webhook: ' . $exception->getMessage());
+            Log::error('Error in payment webhook: '.$exception->getMessage());
 
             return response()->json([
-                'message' => 'Error occurred transaction could not be completed!'
+                'message' => 'Error occurred transaction could not be completed!',
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

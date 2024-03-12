@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Group;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\Group;
 use Inertia\Response;
+use Illuminate\Http\Request;
 
 class GroupController extends Controller
 {
@@ -17,7 +16,7 @@ class GroupController extends Controller
                 ->orderByDesc('id')
                 ->paginate(10)
                 ->withQueryString()
-                ->through(fn($contact) => [
+                ->through(fn ($contact) => [
                     'id' => $contact->id,
                     'createdAt' => $contact->created_at->diffForHumans(),
                     'title' => $contact->title,
@@ -35,7 +34,7 @@ class GroupController extends Controller
     {
         $validated = $this->validate($request, [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255'
+            'description' => 'required|string|max:255',
         ]);
 
         $request->user()->groups()->create($validated);
@@ -51,12 +50,12 @@ class GroupController extends Controller
             'contacts' => $group->contacts()
                 ->paginate(20)
                 ->withQueryString()
-                ->through(fn($contact) => [
+                ->through(fn ($contact) => [
                     'id' => $contact->id,
                     'createdAt' => $contact->created_at->diffForHumans(),
                     'phoneNumber' => $contact->phone_number,
                 ]),
-            'contactCount' => $group->contacts()->count()
+            'contactCount' => $group->contacts()->count(),
         ]);
     }
 
@@ -66,7 +65,7 @@ class GroupController extends Controller
     public function edit(Group $group)
     {
         return inertia('Groups/Edit', [
-            'group' => $group
+            'group' => $group,
         ]);
     }
 
@@ -74,7 +73,7 @@ class GroupController extends Controller
     {
         $validated = $this->validate($request, [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255'
+            'description' => 'required|string|max:255',
         ]);
 
         $group->update($validated);
