@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use App\Models\Scopes\UserScope;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Contact extends Model
 {
@@ -14,7 +14,7 @@ class Contact extends Model
     protected $fillable = [
         'user_id',
         'group_id',
-        'phone_number'
+        'phone_number',
     ];
 
     protected static function boot(): void

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use App\Models\Group;
 use Inertia\Response;
 use Illuminate\Http\Request;
 use App\Imports\ContactsImport;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Validators\ValidationException;
 
@@ -19,7 +19,7 @@ class ContactImportController extends Controller
     {
         return Inertia::render('Contacts/Imports/Index', [
             'group' => $group,
-            'contactCount' => $group->contacts()->count()
+            'contactCount' => $group->contacts()->count(),
         ]);
     }
 
@@ -31,7 +31,7 @@ class ContactImportController extends Controller
 
         try {
             $file = $request->file('file');
-            $filename = mt_rand() . $file->getClientOriginalName();
+            $filename = mt_rand().$file->getClientOriginalName();
             $filepath = $file->storeAs('imports', $filename);
 
             Excel::import(
@@ -46,6 +46,7 @@ class ContactImportController extends Controller
             return redirect()->back()->with('import_error', json_encode($exception->failures()));
         } catch (\Exception $exception) {
             Log::critical($exception);
+
             return redirect()->back()
                 ->with('error', 'Something when wrong. Please try again later.');
         }

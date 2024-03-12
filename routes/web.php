@@ -1,18 +1,16 @@
 <?php
 
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\ContactImportController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\GroupController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\SmsBundleController;
-use App\Http\Controllers\SmsController;
-use App\Http\Controllers\SmsReportController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\SmsController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SmsBundleController;
+use App\Http\Controllers\SmsReportController;
+use App\Http\Controllers\ContactImportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,12 +25,12 @@ use Inertia\Inertia;
 
 Route::get('/', function () {
     return to_route('login');
-//    return Inertia::render('Welcome', [
-//        'canLogin' => Route::has('login'),
-//        'canRegister' => Route::has('register'),
-//        'laravelVersion' => Application::VERSION,
-//        'phpVersion' => PHP_VERSION,
-//    ]);
+    //    return Inertia::render('Welcome', [
+    //        'canLogin' => Route::has('login'),
+    //        'canRegister' => Route::has('register'),
+    //        'laravelVersion' => Application::VERSION,
+    //        'phpVersion' => PHP_VERSION,
+    //    ]);
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

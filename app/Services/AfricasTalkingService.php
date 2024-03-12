@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Http;
 class AfricasTalkingService
 {
     private string $username;
+
     private string $apiKey;
+
     private string $baseUrl;
 
     public function __construct()
@@ -24,7 +26,7 @@ class AfricasTalkingService
             'Content-Type' => 'application/x-www-form-urlencoded',
             'apiKey' => $this->apiKey,
         ])->asForm()
-            ->post($this->baseUrl . '/version1/messaging', [
+            ->post($this->baseUrl.'/version1/messaging', [
                 'username' => $this->username,
                 'to' => $to,
                 'message' => $message,

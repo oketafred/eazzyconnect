@@ -2,18 +2,17 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
-use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberUtil;
+use libphonenumber\NumberParseException;
+use Illuminate\Contracts\Validation\Rule;
 
 class Phone implements Rule
 {
     /**
      * Determine if the validation rule passes.
      *
-     * @param string $attribute
-     * @param mixed $value
-     * @return bool
+     * @param  string  $attribute
+     * @param  mixed  $value
      */
     public function passes($attribute, $value): bool
     {
@@ -29,8 +28,6 @@ class Phone implements Rule
 
     /**
      * Get the validation error message.
-     *
-     * @return string
      */
     public function message(): string
     {

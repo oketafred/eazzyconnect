@@ -2,18 +2,16 @@
 
 namespace App\Jobs;
 
+use Throwable;
 use App\Models\Sms;
 use App\Models\User;
-use App\Services\AfricasTalkingService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Queue\SerializesModels;
+use App\Services\AfricasTalkingService;
+use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Throwable;
 
 class SendBulkSmsJob implements ShouldQueue
 {
@@ -27,8 +25,7 @@ class SendBulkSmsJob implements ShouldQueue
         public string $message,
         public User $user,
         public $group_id,
-    )
-    {
+    ) {
     }
 
     /**
@@ -50,7 +47,7 @@ class SendBulkSmsJob implements ShouldQueue
                 'phone_number' => $payload['number'],
                 'status' => $payload['status'],
                 'messageId' => $payload['messageId'],
-                'message' => $this->message
+                'message' => $this->message,
             ]);
 
             Log::info(json_encode($response));
@@ -62,6 +59,7 @@ class SendBulkSmsJob implements ShouldQueue
     private function calculateSmsCost(): int
     {
         $numberOfSms = ceil(strlen($this->message) / Sms::MAX_NUMBER_OF_CHARACTERS_IN_AN_SMS);
+
         return $numberOfSms * Sms::COST_PER_SMS;
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Contact;
-use App\Models\Group;
 use App\Rules\Phone;
+use App\Models\Group;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -16,7 +15,7 @@ class ContactController extends Controller
             'phone_number' => [
                 'required',
                 new Phone(),
-                'unique:contacts,phone_number,NULL,id,group_id,' . $group->id,
+                'unique:contacts,phone_number,NULL,id,group_id,'.$group->id,
             ],
         ], [
             'phone_number.required' => 'The phone number is required.',
