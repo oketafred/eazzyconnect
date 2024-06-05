@@ -59,7 +59,7 @@ class SmsController extends Controller
         $numberOfSms = $this->numberOfSms($message, $phone_numbers);
         $totalSmsPrice = $this->totalSmsPrice($numberOfSms);
 
-        if ($user?->accountBalance() < $totalSmsPrice) {
+        if ($user->accountBalance() < $totalSmsPrice) {
             return redirect()->back()
                 ->with('error', "Insufficient balance, You need a minimum of UGX $totalSmsPrice to send $numberOfSms SMS(es)");
         }
