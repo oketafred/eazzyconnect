@@ -72,7 +72,7 @@ class SmsBundleController extends Controller
                 'reference' => $sms_bundle->transaction_reference,
                 'msisdn' => $sms_bundle->phone_number,
                 'currency' => $sms_bundle->currency_code,
-                'amount' => $sms_bundle->amount + $sms_bundle->transaction_fee + $sms_bundle->additional_fee,
+                'amount' => (float)$sms_bundle->amount + (float)$sms_bundle->transaction_fee + (float)$sms_bundle->additional_fee,
             ]);
 
             $sms_bundle->update([

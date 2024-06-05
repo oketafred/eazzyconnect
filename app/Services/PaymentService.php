@@ -9,15 +9,11 @@ use Illuminate\Http\Client\RequestException;
 class PaymentService
 {
     private string $baseUrl;
-
-    private string $accountNo;
-
     private string $apiKey;
 
     public function __construct()
     {
         $this->baseUrl = config('relworx.relworx_base_url');
-        $this->accountNo = config('relworx.relworx_account_no');
         $this->apiKey = config('relworx.relworx_api_key');
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class AfricasTalkingService
@@ -19,7 +20,10 @@ class AfricasTalkingService
         $this->baseUrl = 'https://api.africastalking.com';
     }
 
-    public function sendSms($to, $message)
+    /**
+     * @throws RequestException
+     */
+    public function sendSms(string $to, string $message): mixed
     {
         return Http::withHeaders([
             'Accept' => 'application/json',

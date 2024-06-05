@@ -60,6 +60,6 @@ class SendBulkSmsJob implements ShouldQueue
     {
         $numberOfSms = ceil(strlen($this->message) / Sms::MAX_NUMBER_OF_CHARACTERS_IN_AN_SMS);
 
-        return $numberOfSms * Sms::COST_PER_SMS;
+        return (int)($numberOfSms * Sms::COST_PER_SMS);
     }
 }
