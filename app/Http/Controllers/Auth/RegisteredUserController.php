@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use App\Providers\RouteServiceProvider;
+use Spatie\SlackAlerts\Facades\SlackAlert;
 
 class RegisteredUserController extends Controller
 {
@@ -44,6 +45,9 @@ class RegisteredUserController extends Controller
         ]);
 
         event(new Registered($user));
+
+        SlackAlert::toChannel('subscription_alerts')
+            ->message("A new user registered with name: {$user->name} and email: {$user->email}!");
 
         Auth::login($user);
 

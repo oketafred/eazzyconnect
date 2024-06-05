@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\RedirectResponse;
 use App\Providers\RouteServiceProvider;
+use Spatie\SlackAlerts\Facades\SlackAlert;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class VerifyEmailController extends Controller
@@ -20,6 +21,8 @@ class VerifyEmailController extends Controller
         }
 
         if ($request->user()->markEmailAsVerified()) {
+            SlackAlert::toChannel('subscription_alerts')
+                ->message("A new user with email: {$request->user()->email} has verified their email!");
             event(new Verified($request->user()));
         }
 
