@@ -5,11 +5,19 @@ namespace App\Http\Controllers;
 use App\Rules\Phone;
 use App\Models\Group;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ContactController extends Controller
 {
-    public function store(Group $group, Request $request)
+    public function template(): BinaryFileResponse
+    {
+        $path = public_path('ContactsTemplate.csv');
+        return response()->download($path);
+    }
+
+    public function store(Group $group, Request $request): RedirectResponse
     {
         $validator = Validator::make($request->all(), [
             'phone_number' => [

@@ -23,15 +23,7 @@ use App\Http\Controllers\ContactImportController;
 |
 */
 
-Route::get('/', function () {
-    return to_route('login');
-    //    return Inertia::render('Welcome', [
-    //        'canLogin' => Route::has('login'),
-    //        'canRegister' => Route::has('register'),
-    //        'laravelVersion' => Application::VERSION,
-    //        'phpVersion' => PHP_VERSION,
-    //    ]);
-});
+Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -54,11 +46,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/groups/{group}/contacts/import', [ContactImportController::class, 'store'])
         ->name('contact-import.store');
 
-    Route::get('/contact/download-template', function () {
-        $path = public_path('ContactsTemplate.csv');
-
-        return response()->download($path);
-    })->name('contact.import');
+    Route::get('/contact/download-template', [ContactController::class, 'template'])
+        ->name('contact.template');
 
     Route::post('/contact/{group}', [ContactController::class, 'store'])
         ->name('contact.store');
