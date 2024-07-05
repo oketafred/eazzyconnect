@@ -16,10 +16,14 @@ use Maatwebsite\Excel\Concerns\WithValidation;
 
 class ContactsImport implements ToCollection, WithHeadingRow, WithValidation
 {
+    private PhoneNumberUtil $phoneUtil;
+
     public function __construct(
         public int $user_id,
-        public int $group_id
+        public int $group_id,
+        $phoneUtil = null
     ) {
+        $this->phoneUtil = $phoneUtil ?: PhoneNumberUtil::getInstance();
     }
 
     public function collection(Collection $collection): void
@@ -32,7 +36,7 @@ class ContactsImport implements ToCollection, WithHeadingRow, WithValidation
                     'phone_number' => $row['phone_number'],
                 ]);
             } catch (Exception $exception) {
-                Log::info($exception->getMessage());
+                Log::error("Failed to import contact: {$exception->getMessage()}");
             }
         }
     }
@@ -51,9 +55,8 @@ class ContactsImport implements ToCollection, WithHeadingRow, WithValidation
     public function prepareForValidation($data, $index)
     {
         try {
-            $phoneUtil = PhoneNumberUtil::getInstance();
-            $phoneNumber = $phoneUtil->parse($data['phone_number'], 'UG');
-            $formattedPhoneNumber = $phoneUtil->format($phoneNumber, PhoneNumberFormat::E164);
+            $phoneNumber = $this->phoneUtil->parse($data['phone_number'], 'UG');
+            $formattedPhoneNumber = $this->phoneUtil->format($phoneNumber, PhoneNumberFormat::E164);
             $data['phone_number'] = $formattedPhoneNumber;
         } catch (NumberParseException $exception) {
             Log::error($exception);

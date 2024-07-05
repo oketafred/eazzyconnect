@@ -21,7 +21,7 @@ class SmsBundleController extends Controller
     private PaymentService $paymentService;
     private $relworxAccountNo;
 
-    public function __construct($paymentService, $relworxAccountNo = null)
+    public function __construct(PaymentService $paymentService, $relworxAccountNo = null)
     {
         $this->paymentService = $paymentService;
         $this->relworxAccountNo = $relworxAccountNo ?? config('relworx.relworx_account_no');
