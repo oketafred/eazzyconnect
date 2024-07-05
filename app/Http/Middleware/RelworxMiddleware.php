@@ -9,48 +9,59 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RelworxMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
-        $relworx_header = explode(',', $request->header('relworx-signature'));
-        $relworxSignature = Str::after($relworx_header[1], 'v=');
+        if ($this->isRequestAuthorized($request)) {
+            return $next($request);
+        }
 
-        $timestamp = Str::after($relworx_header[0], 't=');
-        $url = $request->fullUrl();
-        $webhook_key = config('relworx.webhook_key');
+        return $this->unauthorizedResponse();
+    }
 
-        $params = [
+    private function isRequestAuthorized(Request $request): bool
+    {
+        [$timestamp, $relworxSignature] = $this->parseRelworxHeader($request->header('relworx-signature'));
+        $webhookKey = config('relworx.webhook_key');
+        $params = $this->getRequestParams($request);
+        $generatedSignature = $this->generateSignature($webhookKey, $timestamp, $request->fullUrl(), $params);
+
+        return $relworxSignature === $generatedSignature;
+    }
+
+    private function parseRelworxHeader(string $header): array
+    {
+        $parts = explode(',', $header);
+        $timestamp = Str::after($parts[0], 't=');
+        $signature = Str::after($parts[1], 'v=');
+
+        return [$timestamp, $signature];
+    }
+
+    private function getRequestParams(Request $request): array
+    {
+        return [
             'status' => $request->get('status'),
             'customer_reference' => $request->get('customer_reference'),
             'internal_reference' => $request->get('internal_reference'),
         ];
-
-        $generatedSignature = $this->generateSignature($webhook_key, $timestamp, $url, $params);
-
-        if ($relworxSignature === $generatedSignature) {
-            return $next($request);
-        }
-
-        return response()->json([
-            'status-code' => 401,
-            'message' => 'Unauthorized',
-        ], Response::HTTP_UNAUTHORIZED);
     }
 
-    private function generateSignature($webhook_key, $timestamp, $url, $params): string
+    private function generateSignature(string $webhookKey, string $timestamp, string $url, array $params): string
     {
-        $signed_data = $url;
-        $signed_data .= $timestamp;
+        $signedData = $url . $timestamp;
         ksort($params);
         foreach ($params as $key => $value) {
-            $signed_data .= strval($key);
-            $signed_data .= strval($value);
+            $signedData .= $key . $value;
         }
 
-        return hash_hmac('sha256', $signed_data, $webhook_key, false);
+        return hash_hmac('sha256', $signedData, $webhookKey, false);
+    }
+
+    private function unauthorizedResponse(): Response
+    {
+        return response()->json([
+            'status-code' => Response::HTTP_UNAUTHORIZED,
+            'message' => 'Unauthorized',
+        ], Response::HTTP_UNAUTHORIZED);
     }
 }

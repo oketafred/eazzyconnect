@@ -5,16 +5,17 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Group;
 use Inertia\Response;
-use Illuminate\Http\Request;
-use App\Imports\ContactsImport;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Auth;
-use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ContactImportService;
+use App\Http\Requests\ImportContactRequest;
 use Maatwebsite\Excel\Validators\ValidationException;
 
 class ContactImportController extends Controller
 {
+    public function __construct(protected ContactImportService $contactImportService)
+    {
+    }
+
     public function index(Group $group): Response
     {
         return Inertia::render('Contacts/Imports/Index', [
@@ -23,29 +24,14 @@ class ContactImportController extends Controller
         ]);
     }
 
-    public function store(Group $group, Request $request)
+    public function store(ImportContactRequest $request, Group $group)
     {
-        $this->validate($request, [
-            'file' => 'required|extensions:csv',
-        ]);
-
         try {
-            $file = $request->file('file');
-            $filename = mt_rand().$file->getClientOriginalName();
-            $filepath = $file->storeAs('imports', $filename);
-
-            Excel::import(
-                new ContactsImport(Auth::id(), $group->id),
-                $filepath,
-                'local',
-                \Maatwebsite\Excel\Excel::CSV
-            );
-
-            Storage::disk('local')->delete($filepath);
+            $this->contactImportService->import($request->file('file'), $group->id);
         } catch (ValidationException $exception) {
             return redirect()->back()->with('import_error', json_encode($exception->failures()));
         } catch (\Exception $exception) {
-            Log::critical($exception);
+            Log::error($exception);
 
             return redirect()->back()
                 ->with('error', 'Something when wrong. Please try again later.');

@@ -2,29 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\SmsResource;
 use App\Models\Sms;
 use Inertia\Inertia;
 
 class SmsReportController extends Controller
 {
-    public function index()
+    public const PER_PAGE = 20;
+
+    public function __invoke()
     {
+        $smses = Sms::query()
+            ->orderByDesc('id')
+            ->paginate(self::PER_PAGE)
+            ->withQueryString();
+
         return Inertia::render('SmsReport/Index', [
-            'smses' => Sms::query()
-                ->orderByDesc('id')
-                ->paginate(20)
-                ->withQueryString()
-                ->through(fn ($sms) => [
-                    'id' => $sms->id,
-                    'createdAt' => $sms->created_at->diffForHumans(),
-                    'message' => $sms->message,
-                    'phoneNumber' => $sms->phone_number,
-                    'status' => $sms->status,
-                    'cost' => $sms->cost,
-                    'messageId' => $sms->messageId,
-                    'failureReason' => $sms->failure_reason,
-                    'groupTitle' => $sms->group->title ?? 'Default',
-                ]),
+            'smses' => SmsResource::collection($smses),
         ]);
     }
 }
