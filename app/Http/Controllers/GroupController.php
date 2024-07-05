@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use App\Models\Group;
 use Inertia\Response;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreGroupRequest;
+use App\Http\Requests\UpdateGroupRequest;
 
 class GroupController extends Controller
 {
+    public const PER_PAGE = 20;
+
     public function index(): Response
     {
         return Inertia::render('Groups/Index', [
             'groups' => Group::query()
                 ->orderByDesc('id')
-                ->paginate(10)
+                ->paginate(self::PER_PAGE)
                 ->withQueryString()
                 ->through(fn ($contact) => [
                     'id' => $contact->id,
@@ -30,13 +33,9 @@ class GroupController extends Controller
         return inertia('Groups/Create');
     }
 
-    public function store(Request $request)
+    public function store(StoreGroupRequest $request)
     {
-        $validated = $this->validate($request, [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-        ]);
-
+        $validated = $request->validated();
         $request->user()->groups()->create($validated);
 
         return redirect('/groups')
@@ -48,7 +47,7 @@ class GroupController extends Controller
         return inertia('Groups/Show', [
             'group' => $group,
             'contacts' => $group->contacts()
-                ->paginate(20)
+                ->paginate(self::PER_PAGE)
                 ->withQueryString()
                 ->through(fn ($contact) => [
                     'id' => $contact->id,
@@ -69,13 +68,9 @@ class GroupController extends Controller
         ]);
     }
 
-    public function update(Request $request, Group $group)
+    public function update(UpdateGroupRequest $request, Group $group)
     {
-        $validated = $this->validate($request, [
-            'title' => 'required|string|max:255',
-            'description' => 'required|string|max:255',
-        ]);
-
+        $validated = $request->validated();
         $group->update($validated);
 
         return redirect('/groups')

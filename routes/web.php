@@ -26,7 +26,7 @@ use App\Http\Controllers\ContactImportController;
 Route::redirect('/', '/login');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])
+    Route::get('/dashboard', DashboardController::class)
         ->name('dashboard');
     Route::get('/groups', [GroupController::class, 'index'])
         ->name('groups.index');
@@ -63,7 +63,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/sms', [SmsController::class, 'store'])
         ->name('sms.store');
 
-    Route::get('sms_report', [SmsReportController::class, 'index'])
+    Route::get('sms_report', SmsReportController::class)
         ->name('sms-report.index');
 });
 

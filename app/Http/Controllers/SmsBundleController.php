@@ -3,20 +3,28 @@
 namespace App\Http\Controllers;
 
 use Exception;
-use App\Rules\Phone;
 use Inertia\Inertia;
 use App\Models\SmsBundle;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Support\Number;
 use App\Services\PaymentService;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\StoreSmsBundleRequest;
 use Illuminate\Http\Client\RequestException;
+use Symfony\Component\HttpFoundation\Response;
 
 class SmsBundleController extends Controller
 {
-    public function __construct(public PaymentService $paymentService)
+    private const TRANSACTION_FEE_PERCENTAGE = 0.25;
+    private const ADDITIONAL_FEE_PERCENTAGE = 0.05;
+
+    private PaymentService $paymentService;
+    private $relworxAccountNo;
+
+    public function __construct($paymentService, $relworxAccountNo = null)
     {
+        $this->paymentService = $paymentService;
+        $this->relworxAccountNo = $relworxAccountNo ?? config('relworx.relworx_account_no');
     }
 
     public function index()
@@ -42,13 +50,9 @@ class SmsBundleController extends Controller
     /**
      * @throws RequestException
      */
-    public function store(Request $request)
+    public function store(StoreSmsBundleRequest $request)
     {
-        $validated = $this->validate($request, [
-            'amount' => 'required',
-            'phone_number' => ['required', new Phone()],
-        ]);
-
+        $validated = $request->validated();
         $user = Auth::user();
 
         try {
@@ -61,14 +65,14 @@ class SmsBundleController extends Controller
                 'customer_email' => $user?->email,
                 'phone_number' => $validated['phone_number'],
                 'transaction_reference' => $transaction_reference,
-                'transaction_fee' => ((2.5 / 100) * $validated['amount']),
-                'transaction_percent' => 2.5,
-                'additional_fee' => ((0.5 / 100) * $validated['amount']),
-                'additional_percent' => 0.5,
+                'transaction_fee' => $this->calculateTransactionFee($validated['amount']),
+                'transaction_percent' => self::TRANSACTION_FEE_PERCENTAGE,
+                'additional_fee' => $this->calculateAdditionalFee($validated['amount']),
+                'additional_percent' => self::ADDITIONAL_FEE_PERCENTAGE,
             ]);
 
             $response = $this->paymentService->requestPayment([
-                'account_no' => config('relworx.relworx_account_no'),
+                'account_no' => $this->relworxAccountNo,
                 'reference' => $sms_bundle->transaction_reference,
                 'msisdn' => $sms_bundle->phone_number,
                 'currency' => $sms_bundle->currency_code,
@@ -79,11 +83,21 @@ class SmsBundleController extends Controller
                 'external_id' => $response['internal_reference'],
             ]);
 
-            return response()->json($response, 201);
+            return response()->json($response, Response::HTTP_CREATED);
         } catch (Exception $exception) {
             return response()->json([
                 'error' => $exception->getMessage(),
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    private function calculateTransactionFee(float $amount): float
+    {
+        return self::TRANSACTION_FEE_PERCENTAGE * $amount;
+    }
+
+    private function calculateAdditionalFee(float $amount): float
+    {
+        return self::ADDITIONAL_FEE_PERCENTAGE * $amount;
     }
 }

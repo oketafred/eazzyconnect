@@ -152,15 +152,15 @@ const props = defineProps({
                             <template v-if="smses.length">
                                   <tr v-for="sms in smses" :key="sms.id">
                                       <td class="whitespace-nowrap py-5 pl-4 pr-3 text-sm sm:pl-0">
-                                          <span>{{ sms.created_at }}</span>
+                                          <span>{{ sms.createdAt }}</span>
                                       </td>
                                       <td class="px-3 py-5 text-sm text-gray-500">
-                                  <span class="flex-wrap">
-                                    {{ sms.message }}
-                                  </span>
+                                          <span class="flex-wrap">
+                                            {{ sms.message }}
+                                          </span>
                                       </td>
                                       <td class="whitespace-nowrap px-3 py-5 text-gray-500 text-sm">
-                                          {{ sms.phone_number }}
+                                          {{ sms.phoneNumber }}
                                       </td>
                                       <td class="whitespace-nowrap px-3 py-5 text-gray-500">
 
